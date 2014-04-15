@@ -1,10 +1,17 @@
 /*
- *
- *
+    SDK for interfacing with the Volar cms.  Allows pulling of lists as well
+	as manipulation of records.  Requires an api user to be set up.  All
+	requests (with the exception of the Volar.sites call) requires the 'site'
+	parameter, and 'site' must match the slug value of a site that the given
+	api user has access to.  Programmers can use the Volar.sites call to get
+	this information.
+	depends on the requests module:
+		https://github.com/mikeal/request
  */
 
-var http = require("http");
-var https = require("https");
+var req = require("request");
+var querystring = require("querystring");
+var crypto = require("crypto");
 var fs = require("fs");
 
 var api_key,
@@ -48,8 +55,618 @@ Volar.prototype.sites = function(params, callback) {
 		be used to get last error string
 	*/
 
-	request(route = 'api/client/info', method = 'GET', params = params, "", callback);
+	make_request(route = 'api/client/info', method = 'GET', params = params, "", callback);
 }
+
+Volar.prototype.broadcasts = function(params, callback) {
+    /*
+		gets list of broadcasts
+
+		@param dict params
+			- required -
+			'site' OR 'sites'	slug of site to filter to.
+				if passing 'sites', users can include a comma-delimited list of
+				sites.  results will reflect all broadcasts in the listed
+				sites.
+			- optional -
+			'list' : type of list.  allowed values are 'all', 'archived',
+				'scheduled' or 'upcoming', 'upcoming_or_streaming',
+				'streaming' or 'live'
+			'page' : current page of listings.  pages begin at '1'
+			'per_page' : number of broadcasts to display per page
+			'section_id' : id of section you wish to limit list to
+			'playlist_id' : id of playlist you wish to limit list to
+			'id' : id of broadcast - useful if you only want to get details
+				of a single broadcast
+			'title' : title of broadcast.  useful for searches, as this
+				accepts incomplete titles and returns all matches.
+			'template_data' : dict.  search broadcast template data.  should
+				be in the form:
+					{
+						'field title' : 'field value',
+						'field title' : 'field value',
+						....
+					}
+			'autoplay' : true or false.  defaults to false.  used in embed
+				code to prevent player from immediately playing
+			'embed_width' : width (in pixels) that embed should be.  defaults
+				to 640
+			'sort_by' : data field to use to sort.  allowed fields are date,
+				status, id, title, description
+			'sort_dir' : direction of sort.  allowed values are 'asc'
+				(ascending) and 'desc' (descending)
+		@return false on failure, dict on success.  if failed, Volar.error can
+			be used to get last error string
+		*/
+
+		if((!'site' in params) && (!'sites' in params)) {
+            error = '"site" or "sites" parameter is required';
+            return false;
+        }
+
+        request(route = 'api/client/broadcast', method = 'GET', params = params, "", callback);
+}
+
+Volar.prototype.broadcast_create = function(params, callback) {
+    /*
+		create a new broadcast
+
+		@param dict params
+			- required -
+			'title' : title of the new broadcast
+			'contact_name' : contact name of person we should contact if we detect problems with this broadcast
+			'contact_phone' : phone we should use to contact contact_name person
+			'contact_sms' : sms number we should use to send text messages to contact_name person
+			'contact_email' : email address we should use to send emails to contact_name person
+				* note that contact_phone can be omitted if contact_sms is supplied, and vice-versa
+			- optional -
+			'description' : HTML formatted description of the broadcast.
+			'status' : currently only supports 'scheduled' & 'upcoming'
+			'timezone' : timezone of given date.  only timezones listed
+				on http://php.net/manual/en/timezones.php are supported.
+				defaults to UTC
+			'date' : date (string) of broadcast event.  will be converted
+				to UTC if the given timezone is given.  note that if the
+				system cannot read the date, or if it isn't supplied, it
+				will default it to the current date & time.
+			'section_id' : id of the section that this broadcast should
+				be assigned.  the Volar.sections() call can give you a
+				list of available sections.  Defaults to a 'General' section
+		@return dict
+			{
+				'success' : True or False depending on success
+				...
+				if 'success' == True:
+					'broadcast' : dict containing broadcast information,
+						including id of new broadcast
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+		*/
+
+		var site = params['site'];
+        delete params['site'];
+
+		if(site === undefined) {
+			error = 'site is required';
+			return false;
+        }
+
+		request(route = 'api/client/broadcast/create', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.broadcast_update = function(params, callback) {
+    /*
+    update existing broadcast
+
+		@param dict params
+			- required -
+			'id' : id of broadcast you wish to update
+			- optional -
+			'title' : title of the new broadcast.  if supplied, CANNOT be
+				blank
+			'description' : HTML formatted description of the broadcast.
+			'status' : currently only supports 'scheduled' & 'upcoming'
+			'timezone' : timezone of given date.  only timezones listed
+				on http://php.net/manual/en/timezones.php are supported.
+				defaults to UTC
+			'date' : date (string) of broadcast event.  will be converted
+				to UTC if the given timezone is given.  note that if the
+				system cannot read the date, or if it isn't supplied, it
+				will default it to the current date & time.
+			'section_id' : id of the section that this broadcast should
+				be assigned.  the Volar.sections() call can give you a
+				list of available sections.  Defaults to a 'General' section
+			'contact_name' : contact name of person we should contact if we detect problems with this broadcast
+			'contact_phone' : phone we should use to contact contact_name person
+			'contact_sms' : sms number we should use to send text messages to contact_name person
+			'contact_email' : email address we should use to send emails to contact_name person
+				* note that contact_phone can be omitted if contact_sms is supplied, and vice-versa
+		@return dict
+			{
+				'success' : True or False depending on success
+				if 'success' == True:
+					'broadcast' : dict containing broadcast information,
+						including id of new broadcast
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+		error = 'site is required';
+		return false;
+    }
+
+	request(route = 'api/client/broadcast/update', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.broadcast_delete = function(params, callback) {
+    /*
+    delete a broadcast
+
+    the only parameter (aside from 'site') that this function takes is 'id'
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/broadcast/delete', method = 'POST', params = { 'site' : site }, post_body = params)
+}
+
+Volar.prototype.broadcast_assign_playlist = function(params, callback) {
+    /*
+    assign a broadcast to a playlist
+
+		@params dict params
+			'id' : id of broadcast
+			'playlist_id' : id of playlist
+		@return dict { 'success' : True }
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/broadcast/assignplaylist', params = params);
+}
+
+Volar.prototype.broadcast_remove_playlist = function(params, callback) {
+	/*
+	remove a broadcast from a playlist
+
+	@params dict params
+		'id' : id of broadcast
+		'playlist_id' : id of playlist
+	@return dict { 'success' : True }
+	*/
+
+	if(site === undefined) {
+            error = 'site is required';
+            return false;
+    }
+
+	request(route = 'api/client/broadcast/removeplaylist', params = params);
+}
+
+Volar.prototype.broadcast_poster = function(params, file_path, filename, callback) {
+	/*
+	uploads an image file as the poster for a broadcast.
+
+	@params
+		dict params
+			'id' : id of broadcast
+		string file_path
+			if supplied, this file is uploaded to the server and attached
+			to the broadcast as an image
+		string filename
+			if supplied & file_path is also given, the uploaded file's
+			name is reported to Volar as this filename.  used for easing
+			file upload passthrus.  if not supplied, the filename from
+			file_path is used.
+	@return dict
+		{
+			'success' : True or False depending on success
+			if 'success' == False:
+				'errors' : list of errors to give reason(s) for failure
+		}
+	*/
+
+	if(file_path === '') {
+		request(route = 'api/client/broadcast/poster', method = 'GET', params = params);
+    }
+	else {
+        var post;
+		if(filename !== '') {
+		//	post = {'files' : { 'api_poster': (filename, open(file_path, 'rb'))}};
+        }
+		else{
+		//	post = {'files' : { 'api_poster': open(file_path, 'rb')}};
+        }
+
+        request(route = 'api/client/broadcast/poster', method = 'POST', params = params, post_body = post);
+    }
+}
+
+Volar.prototype.broadcast_archive = function(params, file_path) {
+	/*
+	archives a broadcast.
+
+	@params
+		dict params
+			'id' : id of broadcast
+			'site' : slug of site that broadcast is attached to.
+		string file_path
+			if supplied, this file is uploaded to the server and attached
+			to the broadcast
+	@return dict
+		{
+			'success' : True or False depending on success
+			'broadcast' : dict describing broadcast that was modified.
+			if 'success' == True:
+				'fileinfo' : dict containing information about the
+				uploaded file (if there was a file uploaded)
+			else:
+				'errors' : list of errors to give reason(s) for failure
+		}
+	*/
+
+	if(file_path === '') {
+		request(route = 'api/client/broadcast/archive', method = 'GET', params = params);
+    }
+	else {
+		var post = //{'files' : { 'archive': open(file_path, 'rb')}}
+		request(route = 'api/client/broadcast/archive', method = 'POST', params = params, post_body = post);
+    }
+}
+
+Volar.prototype.templates = function(params, callback) {
+    /*
+    gets list of meta-data templates
+
+		@param dict params
+			- required -
+			'site' : slug of site to filter to.  note that 'sites' is not supported
+			- optional -
+			'page' : current page of listings.  pages begin at '1'
+			'per_page' : number of broadcasts to display per page
+			'broadcast_id' : id of broadcast you wish to limit list to.
+			'section_id' : id of section you wish to limit list to.
+			'id' : id of template - useful if you only want to get details
+				of a single template
+			'title' : title of template.  useful for searches, as this accepts
+				incomplete titles and returns all matches.
+			'sort_by' : data field to use to sort.  allowed fields are id, title,
+				description, date_modified. defaults to title
+			'sort_dir' : direction of sort.  allowed values are 'asc' (ascending) and
+				'desc' (descending). defaults to asc
+		@return false on failure, dict on success.  if failed, Volar.error can
+			be used to get last error string
+
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/template', params = params);
+}
+
+Volar.prototype.template_create = function(params, callback) {
+    /*
+    create a new meta-data template
+
+		@param dict params
+			- required -
+			'site' : slug of site to filter to.  note that 'sites' is not supported
+			'title' : title of the broadcast
+			'data' : list of data fields (dictionaries) assigned to template.
+				should be in format:
+					[
+						{
+							"title" : (string) "field title",
+							"type" : (string) "type of field",
+							"options" : {...} or [...]	//only include if type supports
+						},
+						...
+					]
+				supported types are:
+					'single-line' - single line of text
+					'multi-line' - multiple-lines of text, option 'rows' (not
+						required) is number of lines html should display as.
+						ex: "options": {'rows': 4}
+					'checkbox' - togglable field.  value will be the title of
+						the field.  no options.
+					'checkbox-list' - list of togglable fields.  values should
+						be included in 'options' list.
+						ex: "options" : ["option 1", "option 2", ...]
+					'radio' - list of selectable fields, although only 1 can be
+						selected at at time.  values should be included in
+						'options' list.
+						ex: "options" : ["option 1", "option 2", ...]
+					'dropdown' - same as radio, but displayed as a dropdown.
+						values should be included in 'options' array.
+						ex: "options" : ["option 1", "option 2", ...]
+					'country' - dropdown containing country names.  if you wish
+						to specify default value, include "default_select".  this
+						should not be passed as an option, but as a seperate value
+						attached to the field, and accepts 2-character country
+						abbreviation.
+					'state' - dropdown containing united states state names.  if
+						you wish to specify default value, include "default_select".
+						this should not be passed as an option, but as a seperate
+						value attached to the field, and accepts 2-character state
+						abbreviation.
+			- optional -
+			'description' : text used to describe the template.
+			'section_id' : id of section to assign broadcast to. will default to 'General'.
+		@return dict
+			{
+				'success' : True or False depending on success
+				...
+				if 'success' == True:
+					'template' : dict containing template information,
+						including id of new template
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/template/create', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.template_update = function(params, callback) {
+    /*
+    create a new meta-data template
+
+		@param dict params
+			- required -
+			'site' : slug of site to filter to.  note that 'sites' is not supported
+			'id' : numeric id of template that you are intending to update.
+			- optional -
+			'title' : title of the broadcast
+			'data' : list of data fields assigned to template.  see template_create() for format
+			'description' : text used to describe the template.
+			'section_id' : id of section to assign broadcast to. will default to 'General'.
+		@return dict
+			{
+				'success' : True or False depending on success
+				...
+				if 'success' == True:
+					'template' : dict containing template information,
+						including id of new template
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+			Note that if you do not have direct access to update a template (it may be domain or
+				client level), a new template will be created and returned to you that does have
+				the permissions set for you to modify.  keep this in mind when updating templates.
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/template/update', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.template_delete = function(params, callback) {
+    /*
+    delete a meta-data template
+
+	the only parameter (aside from 'site') that this function takes is 'id'
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/template/delete', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.sections = function(params, callback) {
+    /*
+    gets list of sections
+
+		@param dict params
+			- required -
+			'site' OR 'sites'	slug of site to filter to.
+				if passing 'sites', users can include a comma-delimited list of
+				sites.  results will reflect all sections in the listed sites.
+			- optional -
+			'page' : current page of listings.  pages begin at '1'
+			'per_page' : number of broadcasts to display per page
+			'broadcast_id' : id of broadcast you wish to limit list to.
+				will always return 1
+			'video_id' : id of video you wish to limit list to.  will always
+				return 1.  note this is not fully supported yet.
+			'id' : id of section - useful if you only want to get details of
+				a single section
+			'title' : title of section.  useful for searches, as this accepts
+				incomplete titles and returns all matches.
+			'sort_by' : data field to use to sort.  allowed fields are id,
+				title
+			'sort_dir' : direction of sort.  allowed values are 'asc'
+				(ascending) and 'desc' (descending)
+		@return false on failure, dict on success.  if failed, Volar.error can
+			be used to get last error string
+    */
+
+    if((!'site' in params) && (!'sites' in params)) {
+        error = '"site" or "sites" parameter is required';
+        return false;
+    }
+
+    request(route = 'api/client/section', params = params);
+}
+
+Volar.prototype.playlists = function(params, callback) {
+    /*
+    gets list of playlists
+
+		@param dict params
+			- required -
+			'site' OR 'sites'	slug of site to filter to.
+				if passing 'sites', users can include a comma-delimited list of
+				sites.  results will reflect all playlists in the listed
+				sites.
+			- optional -
+			'page' : current page of listings.  pages begin at '1'
+			'per_page' : number of broadcasts to display per page
+			'broadcast_id' : id of broadcast you wish to limit list to.
+			'video_id' : id of video you wish to limit list to.  note this is
+				not fully supported yet.
+			'section_id' : id of section you wish to limit list to
+			'id' : id of playlist - useful if you only want to get details of
+				a single playlist
+			'title' : title of playlist.  useful for searches, as this accepts
+				incomplete titles and returns all matches.
+			'sort_by' : data field to use to sort.  allowed fields are id,
+				title
+			'sort_dir' : direction of sort.  allowed values are 'asc'
+				(ascending) and 'desc' (descending)
+		@return false on failure, dict on success.  if failed, Volar.error can
+			be used to get last error string
+    */
+
+    if((!'site' in params) && (!'sites' in params)) {
+        error = '"site" or "sites" parameter is required';
+        return false;
+    }
+
+    request(route = 'api/client/playlist', params = params);
+}
+
+Volar.prototype.playlist_create = function(params, callback) {
+    /*
+    create a new playlist
+
+		@param dict params
+			- required -
+			'title' : title of the new playlist
+			- optional -
+			'description' : HTML formatted description of the playlist.
+			'available' : flag whether or not the playlist is available
+				for public viewing.  accepts 'yes','available','active',
+				& '1' (to flag availability) and 'no','unavailable',
+				'inactive', & '0' (to flag non-availability)
+			'section_id' : id of the section that this playlist should
+				be assigned.  the Volar.sections() call can give you a
+				list of available sections.  Defaults to a 'General' section
+		@return dict
+			{
+				'success' : True or False depending on success
+				...
+				if 'success' == True:
+					'playlist' : dict containing playlist information,
+						including id of new playlist
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/playlist/create', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.playlist_update = function(params, callback) {
+    /*
+    update existing playlist
+
+		@param dict params
+			- required -
+			'id' : id of playlist you wish to update
+			- optional -
+			'title' : title of the new playlist.  if supplied, CANNOT be
+				blank
+			'description' : HTML formatted description of the playlist.
+			'available' : flag whether or not the playlist is available
+				for public viewing.  accepts 'yes','available','active',
+				& '1' (to flag availability) and 'no','unavailable',
+				'inactive', & '0' (to flag non-availability)
+			'section_id' : id of the section that this playlist should
+				be assigned.  the Volar.sections() call can give you a
+				list of available sections.  Defaults to a 'General' section
+		@return dict
+			{
+				'success' : True or False depending on success
+				if 'success' == True:
+					'playlist' : dict containing playlist information,
+						including id of new playlist
+				else:
+					'errors' : list of errors to give reason(s) for failure
+			}
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/playlist/update', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+Volar.prototype.playlist_delete = function(params, callback) {
+    /*
+    delete a playlist
+
+	the only parameter (aside from 'site') that this function takes is 'id'
+    */
+
+    var site = params['site'];
+    delete params['site'];
+
+    if(site === undefined) {
+        error = 'site is required';
+        return false;
+    }
+
+    request(route = 'api/client/playlist/delete', method = 'POST', params = { 'site' : site }, post_body = params);
+}
+
+
 
 function request(route, method, params, post_body, callback) {
     var r = {};
@@ -73,23 +690,15 @@ function request(route, method, params, post_body, callback) {
     params_transformed["api_key"] = api_key;
     var signature = build_signature(route, method, params_transformed, post_body);
     params_transformed["signature"] = signature;
-
-    var url = "/" + route.slice(0, -1);
+    params_transformed = querystring.stringify(params_transformed);
 
     try {
-        if(method === "GET") {
-            var get_options = options(route,method,post_body);
+        if(method === 'GET') {
+            var options = get_options(route, params_transformed, method, post_body);
             var str = '';
-
-            http.request(get_options, function(response) {
-                response.on('data', function(chunk) {
-                    str += chunk;
-                });
-
-                response.on('end', function() {
-                    callback(str);
-                });
-            }).end();
+            req(options, function(error, response, body) {
+                callback(body);
+            });
         }
         else {
             var data = {};
@@ -110,15 +719,10 @@ function request(route, method, params, post_body, callback) {
                     }
                 }
             }
-            var post_options = options(route, method, post_body);
-            var post_req = http.request(post_options, function(response) {
-
-            });
-
-            //var stream = fs.createReadStream(files)
-            post_req.write(data);
-            post_req.end();
-
+            var options = get_options(route, params_transformed, method, post_body);
+            req(options, function(error, response, body) {
+                callback(body);
+            }).pipe(fs.createReadStream(files));
         }
     }
     catch(e) {
@@ -134,16 +738,37 @@ function build_signature(route, method, get_params, post_body) {
 
     var signature = secret + method.toUpperCase() + route;
 
-    console.log(signature);
+    signature += "api_key=" + api_key;
+
+    signature = crypto.createHash("sha256").update(signature).digest("base64");
+    signature = signature.substring(0, 43);
+    signature = signature.trimRight("=");
+
     return signature;
 }
 
-function options(route, method, post_body) {
+function get_options(route, params, method, post_body) {
+    var protocol
+
+    if(secure) {
+        protocol = "https://";
+    }
+    else {
+        protocol = "http://";
+    }
+
     return {
-    host: base_url,
-    port: 80,
-    path: route,
-    method: method};
+        uri: protocol + base_url.trimRight("/") + "/" + route + "?" + params,
+        method: method
+    }
+}
+
+String.prototype.trimRight = function(charlist) {
+    if(charlist === undefined) {
+        charlist = "\s";
+    }
+
+    return this.replace(new RegExp("[" + charlist + "]+$"), "");
 }
 
 module.exports = Volar;
