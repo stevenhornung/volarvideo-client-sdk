@@ -100,8 +100,9 @@ Volar.prototype.broadcasts = function(params, callback) {
 	*/
 
 	if(!params['site'] && !params['sites']) {
-        error = '"site" or "sites" parameter is required';
-        return false;
+        error = "'site' or 'sites' parameter is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/broadcast', method = 'GET', params = params, "", callback);
@@ -148,8 +149,9 @@ Volar.prototype.broadcast_create = function(params, callback) {
     delete params['site'];
 
 	if(site === undefined) {
-		error = 'site is required';
-		return false;
+		error = "site is required";
+		callback(new Error(error));
+        return;
     }
 
 	request(route = 'api/client/broadcast/create', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -197,8 +199,9 @@ Volar.prototype.broadcast_update = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-		error = 'site is required';
-		return false;
+		error = "site is required";
+		callback(new Error(error));
+        return;
     }
 
 	request(route = 'api/client/broadcast/update', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -215,7 +218,7 @@ Volar.prototype.broadcast_delete = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
+        error = "site is required";
         return false;
     }
 
@@ -236,8 +239,9 @@ Volar.prototype.broadcast_assign_playlist = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/broadcast/assignplaylist', params = params);
@@ -254,8 +258,9 @@ Volar.prototype.broadcast_remove_playlist = function(params, callback) {
 	*/
 
 	if(site === undefined) {
-            error = 'site is required';
-            return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
 	request(route = 'api/client/broadcast/removeplaylist', params = params);
@@ -361,8 +366,9 @@ Volar.prototype.templates = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/template', params = params);
@@ -432,8 +438,9 @@ Volar.prototype.template_create = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/template/create', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -471,8 +478,9 @@ Volar.prototype.template_update = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/template/update', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -489,8 +497,9 @@ Volar.prototype.template_delete = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/template/delete', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -525,8 +534,9 @@ Volar.prototype.sections = function(params, callback) {
     */
 
     if(!params['site'] && !params['sites']) {
-        error = '"site" or "sites" parameter is required';
-        return false;
+        error = "'site' or 'sites' parameter is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/section', params = params);
@@ -562,8 +572,9 @@ Volar.prototype.playlists = function(params, callback) {
     */
 
     if(!params['site'] && !params['sites']) {
-        error = '"site" or "sites" parameter is required';
-        return false;
+        error = "'site' or 'sites' parameter is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/playlist', params = params);
@@ -601,8 +612,9 @@ Volar.prototype.playlist_create = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/playlist/create', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -641,8 +653,9 @@ Volar.prototype.playlist_update = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/playlist/update', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -659,8 +672,9 @@ Volar.prototype.playlist_delete = function(params, callback) {
     delete params['site'];
 
     if(site === undefined) {
-        error = 'site is required';
-        return false;
+        error = "site is required";
+        callback(new Error(error));
+        return;
     }
 
     request(route = 'api/client/playlist/delete', method = 'POST', params = { 'site' : site }, post_body = params);
@@ -727,7 +741,8 @@ function request(route, method, params, post_body, callback) {
     }
     catch(e) {
         error = "Request failed with the following error: " + e.message
-        return false;
+        callback(new Error(error));
+        return;
     }
 }
 
