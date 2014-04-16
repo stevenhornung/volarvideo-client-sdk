@@ -55,7 +55,7 @@ Volar.prototype.sites = function(params, callback) {
 		be used to get last error string
 	*/
 
-	request(route = 'api/client/info', method = 'GET', params = params, null, callback);
+	request(route = 'api/client/info', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.broadcasts = function(params, callback) {
@@ -105,7 +105,7 @@ Volar.prototype.broadcasts = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/broadcast', method = 'GET', params = params, null, callback);
+    request(route = 'api/client/broadcast', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.broadcast_create = function(params, callback) {
@@ -154,7 +154,7 @@ Volar.prototype.broadcast_create = function(params, callback) {
         return;
     }
 
-	request(route = 'api/client/broadcast/create', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+	request(route = 'api/client/broadcast/create', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.broadcast_update = function(params, callback) {
@@ -204,7 +204,7 @@ Volar.prototype.broadcast_update = function(params, callback) {
         return;
     }
 
-	request(route = 'api/client/broadcast/update', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+	request(route = 'api/client/broadcast/update', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.broadcast_delete = function(params, callback) {
@@ -222,7 +222,7 @@ Volar.prototype.broadcast_delete = function(params, callback) {
         return false;
     }
 
-    request(route = 'api/client/broadcast/delete', method = 'POST', params = { 'site' : site }, post_body = params, callback)
+    request(route = 'api/client/broadcast/delete', method = 'POST', req_params = { 'site' : site }, post_body = params, callback)
 }
 
 Volar.prototype.broadcast_assign_playlist = function(params, callback) {
@@ -244,7 +244,7 @@ Volar.prototype.broadcast_assign_playlist = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/broadcast/assignplaylist', method = 'GET', params = params, null, callback);
+    request(route = 'api/client/broadcast/assignplaylist', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.broadcast_remove_playlist = function(params, callback) {
@@ -263,7 +263,7 @@ Volar.prototype.broadcast_remove_playlist = function(params, callback) {
         return;
     }
 
-	request(route = 'api/client/broadcast/removeplaylist', method = 'GET', params = params, null, callback);
+	request(route = 'api/client/broadcast/removeplaylist', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.broadcast_poster = function(params, file_path, filename, callback) {
@@ -290,7 +290,7 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
 	*/
 
 	if(file_path === '') {
-		request(route = 'api/client/broadcast/poster', method = 'GET', params = params, null, callback);
+		request(route = 'api/client/broadcast/poster', method = 'GET', req_params = params, null, callback);
     }
 	else {
         var post;
@@ -301,7 +301,7 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
 		//	post = {'files' : { 'api_poster': open(file_path, 'rb')}};
         }
 
-        request(route = 'api/client/broadcast/poster', method = 'POST', params = params, post_body = post, callback);
+        request(route = 'api/client/broadcast/poster', method = 'POST', req_params = params, post_body = post, callback);
     }
 }
 
@@ -329,11 +329,11 @@ Volar.prototype.broadcast_archive = function(params, file_path) {
 	*/
 
 	if(file_path === '') {
-		request(route = 'api/client/broadcast/archive', method = 'GET', params = params, null, callback);
+		request(route = 'api/client/broadcast/archive', method = 'GET', req_params = params, null, callback);
     }
 	else {
 		var post = //{'files' : { 'archive': open(file_path, 'rb')}}
-		request(route = 'api/client/broadcast/archive', method = 'POST', params = params, post_body = post, callback);
+		request(route = 'api/client/broadcast/archive', method = 'POST', req_params = params, post_body = post, callback);
     }
 }
 
@@ -371,7 +371,7 @@ Volar.prototype.templates = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/template', method = 'GET', params = params, null, callback);
+    request(route = 'api/client/template', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.template_create = function(params, callback) {
@@ -443,7 +443,7 @@ Volar.prototype.template_create = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/template/create', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/template/create', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.template_update = function(params, callback) {
@@ -483,7 +483,7 @@ Volar.prototype.template_update = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/template/update', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/template/update', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.template_delete = function(params, callback) {
@@ -502,7 +502,7 @@ Volar.prototype.template_delete = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/template/delete', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/template/delete', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.sections = function(params, callback) {
@@ -539,7 +539,7 @@ Volar.prototype.sections = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/section', method = 'GET', params = params, null, callback);
+    request(route = 'api/client/section', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.playlists = function(params, callback) {
@@ -577,7 +577,7 @@ Volar.prototype.playlists = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/playlist', method = 'GET', params = params, null, callback);
+    request(route = 'api/client/playlist', method = 'GET', req_params = params, null, callback);
 }
 
 Volar.prototype.playlist_create = function(params, callback) {
@@ -617,7 +617,7 @@ Volar.prototype.playlist_create = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/playlist/create', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/playlist/create', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.playlist_update = function(params, callback) {
@@ -658,7 +658,7 @@ Volar.prototype.playlist_update = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/playlist/update', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/playlist/update', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 Volar.prototype.playlist_delete = function(params, callback) {
@@ -677,12 +677,12 @@ Volar.prototype.playlist_delete = function(params, callback) {
         return;
     }
 
-    request(route = 'api/client/playlist/delete', method = 'POST', params = { 'site' : site }, post_body = params, callback);
+    request(route = 'api/client/playlist/delete', method = 'POST', req_params = { 'site' : site }, post_body = params, callback);
 }
 
 
 
-function request(route, method, params, post_body, callback) {
+function request(route, method, req_params, post_body, callback) {
     /*
     make request to client cms api
 
@@ -707,20 +707,22 @@ function request(route, method, params, post_body, callback) {
     */
 
     // Build dictionary of parameter objects
+    req_params = sortObject(req_params);
     var params_transformed = {};
-    for(var param in params) {
+    for(var param in req_params) {
         if(param instanceof Array) {
-            for(var v_param in params[param]) {
+            var ind_param = sortObject(req_params[param]);
+            for(var v_param in ind_param) {
                 params_transformed[param + "[" + encodeURIComponent(v_param) + "]"] = param[v_param];
             }
         }
         else {
-            params_transformed[param] = params[param];
+            params_transformed[param] = req_params[param];
         }
     }
 
     params_transformed["api_key"] = api_key;
-    var signature = build_signature(route, method, params_transformed, post_body);
+    var signature = build_signature(route, method, params_transformed, JSON.stringify(post_body));
     params_transformed["signature"] = signature;
     params_transformed = querystring.stringify(params_transformed);
 
@@ -742,7 +744,7 @@ function request(route, method, params, post_body, callback) {
                 if(post_body instanceof String) {
                     data = post_body;
                 }
-                else if(post_body instanceof Array) {
+                else if(post_body instanceof Object) {
                     for(var i in post_body) {
                         // Check if file needs to be sent as multipart
                         if(i === "files") {
@@ -757,10 +759,19 @@ function request(route, method, params, post_body, callback) {
 
             var options = get_options(route, params_transformed, method, data);
 
-            // Make POST request with options and pipe and files to the request
-            req(options, function(error, response, body) {
-                callback(null, body);
-            }).pipe(fs.createReadStream(files));
+            // Make POST request with options
+            // Check that no files to pipe
+            if(Object.keys(files).length === 0) {
+                req(options, function(error, response, body) {
+                    callback(null, body);
+                });
+            }
+            // Else files need to be piped to request
+            else {
+                req(options, function(error, response, body) {
+                    callback(null, body);
+                }).pipe(fs.createReadStream(files));
+            }
         }
     }
     catch(e) {
@@ -770,14 +781,30 @@ function request(route, method, params, post_body, callback) {
     }
 }
 
-function build_signature(route, method, get_params, post_body) {
-    if(typeof(method) === "undefined") {
-        method = "GET"
-    }
-
+function build_signature(route, method, params, post_body) {
     var signature = secret + method.toUpperCase() + route;
 
-    signature += "api_key=" + api_key;
+    params = sortObject(params);
+    for(var param in params) {
+        var ind_param = sortObject(params[param]);
+        if(param instanceof Array) {
+            for(var i = 0; i < ind_param.length; ++i) {
+                signature += param + '[' + i + ']=' + ind_param[i];
+            }
+        }
+        else if(param instanceof Object) {
+            for(var ind_param_key in ind_param) {
+                signature += param + '[' + ind_param_key + ']=' + ind_param[ind_param_key];
+            }
+        }
+        else {
+            signature += param + '=' + params[param];
+        }
+    }
+
+    if(post_body) {
+        signature += post_body;
+    }
 
     signature = crypto.createHash("sha256").update(signature).digest("base64");
     signature = signature.substring(0, 43);
@@ -787,7 +814,7 @@ function build_signature(route, method, get_params, post_body) {
 }
 
 function get_options(route, params, method, post_body) {
-    var protocol
+    var protocol;
 
     if(secure) {
         protocol = "https://";
@@ -798,11 +825,11 @@ function get_options(route, params, method, post_body) {
 
     var options
 
-    if(post_body !== undefined) {
+    if(post_body) {
         options = {
             uri: protocol + base_url.trimRight("/") + "/" + route + "?" + params,
             method: method,
-            body: post_body
+            json: post_body
         };
     }
     else {
@@ -814,6 +841,25 @@ function get_options(route, params, method, post_body) {
     }
 
     return options;
+}
+
+function sortObject(obj) {
+    var sorted = {};
+    var key, a = [];
+
+    for(key in obj) {
+        if(obj.hasOwnProperty(key)) {
+            a.push(key);
+        }
+    }
+
+    a.sort();
+
+    for(key = 0; key < a.length; ++key) {
+        sorted[a[key]] = obj[a[key]];
+    }
+
+    return sorted;
 }
 
 String.prototype.trimRight = function(charlist) {
