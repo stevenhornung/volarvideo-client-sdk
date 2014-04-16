@@ -30,7 +30,7 @@ class Volar
 	 *				'title'				title of site.  useful for searches, as this accepts incomplete titles and returns all matches.
 	 *				'sort_by'			data field to use to sort.  allowed fields are status, id, title, description. defaults to title
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 		public sites(string[] parameter_array)
 	{
@@ -57,7 +57,7 @@ class Volar
 	 *										note - if both before and after are included, broadcasts between the supplied dates are returned.
 	 *				'sort_by'			data field to use to sort.  allowed fields are date, status, id, title, description. defaults to date
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to desc
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	 	public broadcasts(string[] paramater_array)
 	{
@@ -87,7 +87,9 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
+			
 		}
 		return this.request('api/client/broadcast/create', 'POST', array(), paramater);
 	}
@@ -96,7 +98,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/broadcast/update', 'POST', array(), parameter_array);
 	}
@@ -104,7 +107,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-		//	parameter_array = json_encode(parameter_array);
+		var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/broadcast/delete', 'POST', array(), parameter_array);
 	}
@@ -130,16 +134,16 @@ class Volar
 	
 		/**
 	 *	archives a broadcast
-	 *	@param array $params associative array
+	 *	@param array parameter_array associative array
 	 *			recognized parameters in array:
 	 *				- required -
 	 *				'site'				slug of site to filter to.
 	 *				'id'				id of broadcast
-	 *	@param string $file_path (optional) path to file you wish to upload.
+	 *	@param string file_path (optional) path to file you wish to upload.
 	 *				Only necessary if you wish to upload a new video file to an existing broadcast.
 	 *				If your broadcast was streamed via a different method (RTMP or production truck) & you wish to
 	 *				archive the existing video data, omit this argument.
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	 
 	 public broadcast_archive(parameter_array = array(), string file_path = '')
@@ -155,13 +159,13 @@ class Volar
 		}
 		else
 		{
-		//	string post = array('archive' => '@'.ltrim($file_path,'@'));
+		//	string post = array('archive' => '@'.ltrim(file_path,'@'));
 			return this.request('api/client/broadcast/archive', 'POST', parameter_array, post);
 		}
 	}
 	/**
 	 *	gets list of meta-data templates
-	 *	@param array $params associative array
+	 *	@param array parameter_array associative array
 	 *			recognized parameters in array:
 	 *				- required -
 	 *				'site'
@@ -174,7 +178,7 @@ class Volar
 	 *				'title'				title of template.  useful for searches, as this accepts incomplete titles and returns all matches.
 	 *				'sort_by'			data field to use to sort.  allowed fields are id, title, description, date_modified. defaults to title
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	 public templates(parameter_array = array())
 	{
@@ -187,7 +191,7 @@ class Volar
 	}
 		/**
 	 *	creates a new meta-data template
-	 *	@param mixed $params associative array or json string
+	 *	@param mixed parameter_array associative array or json string
 	 *		recognized parameters:
 	 *			- required -
 	 *				'site'
@@ -218,13 +222,14 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/create', 'POST', array(), parameter_array);
 	}
 	/**
 	 *	update an existing broadcast meta-data template
-	 *	@param mixed $params associative array or json string
+	 *	@param mixed parameter_array associative array or json string
 	 *		recognized parameters:
 	 *			- required -
 	 *				'site'				slug of site to assign broadcast to. note that if the api user does not have permission to create broadcasts on the given site, an error will be produced.
@@ -239,14 +244,15 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/update', 'POST', array(), parameter_array);
 	}
 	
 	/**
 	 *	delete an existing broadcast meta-data template.  note that this does not affect template data attached to broadcasts, only the template.
-	 *	@param mixed $params associative array or json string
+	 *	@param mixed parameter_array associative array or json string
 	 *		recognized parameters:
 	 *			- required -
 	 *				'site'				slug of site to assign broadcast to. note that if the api user does not have permission to create broadcasts on the given site, an error will be produced.
@@ -256,13 +262,14 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/delete', 'POST', array(), parameter_array);
 	}
 	/**
 	 *	gets list of sections
-	 *	@param array $params associative array
+	 *	@param array parameter_array associative array
 	 *			recognized parameters in array:
 	 *				- required -
 	 *				'site' OR 'sites'	slug of site to filter to.
@@ -277,7 +284,7 @@ class Volar
 	 *				'title'				title of section.  useful for searches, as this accepts incomplete titles and returns all matches.
 	 *				'sort_by'			data field to use to sort.  allowed fields are id, title. defaults to title
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	public sections(parameter_array = array())
 	{
@@ -291,7 +298,7 @@ class Volar
 	
 	/**
 	 *	gets list of playlists
-	 *	@param array $params associative array
+	 *	@param array parameter_array associative array
 	 *			recognized parameters in array:
 	 *				- required -
 	 *				'site' OR 'sites'	slug of site to filter to.
@@ -307,7 +314,7 @@ class Volar
 	 *				'title'				title of playlist.  useful for searches, as this accepts incomplete titles and returns all matches.
 	 *				'sort_by'			data field to use to sort.  allowed fields are id, title. defaults to title
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	public playlists(parameter_array = array())
 	{
@@ -317,7 +324,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-		//	parameter_array = json_encode(parameter_array);
+		var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/create', 'POST', array(), parameter_array);
 	}
@@ -325,7 +333,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/update', 'POST', array(), parameter_array);
 	}
@@ -334,7 +343,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/delete', 'POST', array(), parameter_array);
 	}
@@ -345,7 +355,7 @@ class Volar
 	}
 	/**
 	 *	gets list of videos
-	 *	@param array $params associative array
+	 *	@param array parameter_array associative array
 	 *			recognized parameters in array:
 	 *				- required -
 	 *				'site'				slug of site to filter to.
@@ -361,7 +371,7 @@ class Volar
 	 *				'embed_width'		width (in pixels) that embed should be.  defaults to 640
 	 *				'sort_by'			data field to use to sort.  allowed fields are status, id, title, description, and playlist (only when playlist_id is supplied)
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending)
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	public videos(parameter_array = array())
 	{
@@ -373,12 +383,12 @@ class Volar
 		return this.request('api/client/video', 'GET', parameter_array);
 	}
 	/**
-	 *	submits request to $base_url through $route
-	 *	@param string 	$route		api uri path (not including base_url!)
-	 *	@param string 	$type		type of request.  only GET and POST are supported.  if blank, GET is assumed
-	 *	@param array 	$params		associative array containing the GET parameters for the request
-	 *	@param mixed 	$post_body	either a string or an array for post requests.  only used if $type is POST.  if left null, an error will be returned
-	 *	@return false on failure, array on success.  if failed, $volar->getError() can be used to get last error string
+	 *	submits request to base_url through route
+	 *	@param string 	route		api uri path (not including base_url!)
+	 *	@param string 	type		type of request.  only GET and POST are supported.  if blank, GET is assumed
+	 *	@param array 	parameter_array		associative array containing the GET parameters for the request
+	 *	@param mixed 	post_body	either a string or an array for post requests.  only used if type is POST.  if left null, an error will be returned
+	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	public request(string route, string type = '', parameter_array = array(), string post_body = null)
 	{
@@ -420,7 +430,7 @@ class Volar
 	{
 		//type = strtoupper(type ? type : 'GET');
 		//ksort(get_params);
-		//$stringToSign = this.secret.type.trim($route, '/');
+		//stringToSign = this.secret.type.trim(route, '/');
 
 		foreach(get_params as key => value)	//note that get_params are NOT urlencoded
 		{
@@ -456,7 +466,7 @@ class Volar
 		//curl_setopt(ch, CURLOPT_CUSTOMREQUEST, type);	//set request type
 		if(content_type)
 		{
-			//curl_setopt($ch, CURLOPT_HTTPHEADER, $content_type);
+			//curl_setopt(ch, CURLOPT_HTTPHEADER, content_type);
 		}
 		if(!empty(post_body) && type == 'POST')
 		{
@@ -487,3 +497,4 @@ class Volar
         return response;
 	}
 }
+
