@@ -55,7 +55,7 @@ Volar.prototype.sites = function(params, callback) {
 		be used to get last error string
 	*/
 
-	make_request(route = 'api/client/info', method = 'GET', params = params, "", callback);
+	request(route = 'api/client/info', method = 'GET', params = params, "", callback);
 }
 
 Volar.prototype.broadcasts = function(params, callback) {
