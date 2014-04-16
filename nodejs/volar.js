@@ -711,7 +711,7 @@ function request(route, method, params, post_body, callback) {
             var options = get_options(route, params_transformed, method, post_body);
             var str = '';
             req(options, function(error, response, body) {
-                callback(body);
+                callback(null, body);
             });
         }
         else {
@@ -735,7 +735,7 @@ function request(route, method, params, post_body, callback) {
             }
             var options = get_options(route, params_transformed, method, post_body);
             req(options, function(error, response, body) {
-                callback(body);
+                callback(null, body);
             }).pipe(fs.createReadStream(files));
         }
     }
