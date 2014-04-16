@@ -99,7 +99,7 @@ Volar.prototype.broadcasts = function(params, callback) {
 			be used to get last error string
 		*/
 
-		if((!'site' in params) && (!'sites' in params)) {
+		if(!params['site'] && !params['sites']) {
             error = '"site" or "sites" parameter is required';
             return false;
         }
@@ -524,7 +524,7 @@ Volar.prototype.sections = function(params, callback) {
 			be used to get last error string
     */
 
-    if((!'site' in params) && (!'sites' in params)) {
+    if(!params['site'] && !params['sites']) {
         error = '"site" or "sites" parameter is required';
         return false;
     }
@@ -561,7 +561,7 @@ Volar.prototype.playlists = function(params, callback) {
 			be used to get last error string
     */
 
-    if((!'site' in params) && (!'sites' in params)) {
+    if(!params['site'] && !params['sites']) {
         error = '"site" or "sites" parameter is required';
         return false;
     }
