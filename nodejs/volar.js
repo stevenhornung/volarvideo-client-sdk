@@ -295,10 +295,10 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
 	else {
         var post;
 		if(filename !== '') {
-		//	post = {'files' : { 'api_poster': (filename, open(file_path, 'rb'))}};
+			post = {'files' : { 'api_poster': [filename, file_path]}};
         }
 		else{
-		//	post = {'files' : { 'api_poster': open(file_path, 'rb')}};
+			post = {'files' : { 'api_poster': file_path}};
         }
 
         request(route = 'api/client/broadcast/poster', method = 'POST', req_params = params, post_body = post, callback);
@@ -768,9 +768,10 @@ function request(route, method, req_params, post_body, callback) {
             }
             // Else files need to be piped to request
             else {
-                req(options, function(error, response, body) {
+                var file = files['api_poster'];
+                fs.createReadStream(file[file.length-1]).pipe(req(options, function(error, response, body) {
                     callback(null, body);
-                }).pipe(fs.createReadStream(files));
+                }));
             }
         }
     }
@@ -813,7 +814,7 @@ function build_signature(route, method, params, post_body) {
     return signature;
 }
 
-function get_options(route, params, method, post_body) {
+function get_options(route, params, method, data) {
     var protocol;
 
     if(secure) {
@@ -825,11 +826,11 @@ function get_options(route, params, method, post_body) {
 
     var options
 
-    if(post_body) {
+    if(data) {
         options = {
             uri: protocol + base_url.trimRight("/") + "/" + route + "?" + params,
             method: method,
-            json: post_body
+            json: data
         };
     }
     else {
