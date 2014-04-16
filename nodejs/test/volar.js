@@ -60,99 +60,99 @@ Volar.prototype.sites = function(params, callback) {
 
 Volar.prototype.broadcasts = function(params, callback) {
     /*
-		gets list of broadcasts
+	gets list of broadcasts
 
-		@param dict params
-			- required -
-			'site' OR 'sites'	slug of site to filter to.
-				if passing 'sites', users can include a comma-delimited list of
-				sites.  results will reflect all broadcasts in the listed
-				sites.
-			- optional -
-			'list' : type of list.  allowed values are 'all', 'archived',
-				'scheduled' or 'upcoming', 'upcoming_or_streaming',
-				'streaming' or 'live'
-			'page' : current page of listings.  pages begin at '1'
-			'per_page' : number of broadcasts to display per page
-			'section_id' : id of section you wish to limit list to
-			'playlist_id' : id of playlist you wish to limit list to
-			'id' : id of broadcast - useful if you only want to get details
-				of a single broadcast
-			'title' : title of broadcast.  useful for searches, as this
-				accepts incomplete titles and returns all matches.
-			'template_data' : dict.  search broadcast template data.  should
-				be in the form:
-					{
-						'field title' : 'field value',
-						'field title' : 'field value',
-						....
-					}
-			'autoplay' : true or false.  defaults to false.  used in embed
-				code to prevent player from immediately playing
-			'embed_width' : width (in pixels) that embed should be.  defaults
-				to 640
-			'sort_by' : data field to use to sort.  allowed fields are date,
-				status, id, title, description
-			'sort_dir' : direction of sort.  allowed values are 'asc'
-				(ascending) and 'desc' (descending)
-		@return false on failure, dict on success.  if failed, Volar.error can
-			be used to get last error string
-		*/
+	@param dict params
+		- required -
+		'site' OR 'sites'	slug of site to filter to.
+			if passing 'sites', users can include a comma-delimited list of
+			sites.  results will reflect all broadcasts in the listed
+			sites.
+		- optional -
+		'list' : type of list.  allowed values are 'all', 'archived',
+			'scheduled' or 'upcoming', 'upcoming_or_streaming',
+			'streaming' or 'live'
+		'page' : current page of listings.  pages begin at '1'
+		'per_page' : number of broadcasts to display per page
+		'section_id' : id of section you wish to limit list to
+		'playlist_id' : id of playlist you wish to limit list to
+		'id' : id of broadcast - useful if you only want to get details
+			of a single broadcast
+		'title' : title of broadcast.  useful for searches, as this
+			accepts incomplete titles and returns all matches.
+		'template_data' : dict.  search broadcast template data.  should
+			be in the form:
+				{
+					'field title' : 'field value',
+					'field title' : 'field value',
+					....
+				}
+		'autoplay' : true or false.  defaults to false.  used in embed
+			code to prevent player from immediately playing
+		'embed_width' : width (in pixels) that embed should be.  defaults
+			to 640
+		'sort_by' : data field to use to sort.  allowed fields are date,
+			status, id, title, description
+		'sort_dir' : direction of sort.  allowed values are 'asc'
+			(ascending) and 'desc' (descending)
+	@return false on failure, dict on success.  if failed, Volar.error can
+		be used to get last error string
+	*/
 
-		if(!params['site'] && !params['sites']) {
-            error = '"site" or "sites" parameter is required';
-            return false;
-        }
+	if(!params['site'] && !params['sites']) {
+        error = '"site" or "sites" parameter is required';
+        return false;
+    }
 
-        request(route = 'api/client/broadcast', method = 'GET', params = params, "", callback);
+    request(route = 'api/client/broadcast', method = 'GET', params = params, "", callback);
 }
 
 Volar.prototype.broadcast_create = function(params, callback) {
     /*
-		create a new broadcast
+	create a new broadcast
 
-		@param dict params
-			- required -
-			'title' : title of the new broadcast
-			'contact_name' : contact name of person we should contact if we detect problems with this broadcast
-			'contact_phone' : phone we should use to contact contact_name person
-			'contact_sms' : sms number we should use to send text messages to contact_name person
-			'contact_email' : email address we should use to send emails to contact_name person
-				* note that contact_phone can be omitted if contact_sms is supplied, and vice-versa
-			- optional -
-			'description' : HTML formatted description of the broadcast.
-			'status' : currently only supports 'scheduled' & 'upcoming'
-			'timezone' : timezone of given date.  only timezones listed
-				on http://php.net/manual/en/timezones.php are supported.
-				defaults to UTC
-			'date' : date (string) of broadcast event.  will be converted
-				to UTC if the given timezone is given.  note that if the
-				system cannot read the date, or if it isn't supplied, it
-				will default it to the current date & time.
-			'section_id' : id of the section that this broadcast should
-				be assigned.  the Volar.sections() call can give you a
-				list of available sections.  Defaults to a 'General' section
-		@return dict
-			{
-				'success' : True or False depending on success
-				...
-				if 'success' == True:
-					'broadcast' : dict containing broadcast information,
-						including id of new broadcast
-				else:
-					'errors' : list of errors to give reason(s) for failure
-			}
-		*/
+	@param dict params
+		- required -
+		'title' : title of the new broadcast
+		'contact_name' : contact name of person we should contact if we detect problems with this broadcast
+		'contact_phone' : phone we should use to contact contact_name person
+		'contact_sms' : sms number we should use to send text messages to contact_name person
+		'contact_email' : email address we should use to send emails to contact_name person
+			* note that contact_phone can be omitted if contact_sms is supplied, and vice-versa
+		- optional -
+		'description' : HTML formatted description of the broadcast.
+		'status' : currently only supports 'scheduled' & 'upcoming'
+		'timezone' : timezone of given date.  only timezones listed
+			on http://php.net/manual/en/timezones.php are supported.
+			defaults to UTC
+		'date' : date (string) of broadcast event.  will be converted
+			to UTC if the given timezone is given.  note that if the
+			system cannot read the date, or if it isn't supplied, it
+			will default it to the current date & time.
+		'section_id' : id of the section that this broadcast should
+			be assigned.  the Volar.sections() call can give you a
+			list of available sections.  Defaults to a 'General' section
+	@return dict
+	{
+		'success' : True or False depending on success
+		...
+		if 'success' == True:
+			'broadcast' : dict containing broadcast information,
+				including id of new broadcast
+		else:
+			'errors' : list of errors to give reason(s) for failure
+	}
+	*/
 
-		var site = params['site'];
-        delete params['site'];
+	var site = params['site'];
+    delete params['site'];
 
-		if(site === undefined) {
-			error = 'site is required';
-			return false;
-        }
+	if(site === undefined) {
+		error = 'site is required';
+		return false;
+    }
 
-		request(route = 'api/client/broadcast/create', method = 'POST', params = { 'site' : site }, post_body = params);
+	request(route = 'api/client/broadcast/create', method = 'POST', params = { 'site' : site }, post_body = params);
 }
 
 Volar.prototype.broadcast_update = function(params, callback) {
