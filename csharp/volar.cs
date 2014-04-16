@@ -87,7 +87,9 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
+			
 		}
 		return this.request('api/client/broadcast/create', 'POST', array(), paramater);
 	}
@@ -96,7 +98,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/broadcast/update', 'POST', array(), parameter_array);
 	}
@@ -104,7 +107,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-		//	parameter_array = json_encode(parameter_array);
+		var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/broadcast/delete', 'POST', array(), parameter_array);
 	}
@@ -218,7 +222,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/create', 'POST', array(), parameter_array);
 	}
@@ -239,7 +244,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/update', 'POST', array(), parameter_array);
 	}
@@ -256,7 +262,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/template/delete', 'POST', array(), parameter_array);
 	}
@@ -317,7 +324,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-		//	parameter_array = json_encode(parameter_array);
+		var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/create', 'POST', array(), parameter_array);
 	}
@@ -325,7 +333,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/update', 'POST', array(), parameter_array);
 	}
@@ -334,7 +343,8 @@ class Volar
 	{
 		if(is_array(parameter_array) && count(parameter_array) > 0)
 		{
-			//parameter_array = json_encode(parameter_array);
+			var serializer = new JavaScriptSerializer();
+			parameter_array = serializer.Serialize(parameter_array);
 		}
 		return this.request('api/client/playlist/delete', 'POST', array(), parameter_array);
 	}
@@ -487,3 +497,4 @@ class Volar
         return response;
 	}
 }
+
