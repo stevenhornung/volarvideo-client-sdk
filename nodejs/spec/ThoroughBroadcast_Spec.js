@@ -6,13 +6,54 @@ var api_key = config.api_key,
     base_url = config.base_url;
 
 
-describe("connection", function() {
-    it("should succeed with valid credentials", function() {
-        var volar = new Volar(api_key, secret, base_url);
+describe("Broadcasts", function() {
+    var volar = new Volar(api_key, secret, base_url);
+
+    it("called without site parameter fails", function() {
         var flag, data, error;
 
         runs(function() {
-            volar.broadcasts({site: 'site4'}, function(rt_error, rt_data) {
+            volar.broadcasts({}, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "Data and error to be set", 1000);
+
+        runs(function() {
+            expect(error).not.toBeNull();
+        });
+    });
+
+    it("called with invalid site parameter fails", function() {
+        var flag, data, error;
+
+        runs(function() {
+            volar.broadcasts({site: 'blah blah'}, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "Data and error to be set", 1000);
+
+        runs(function() {
+            expect(error).not.toBeNull();
+        });
+    });
+
+    it("called with valid site parameter to succeed", function() {
+        var flag, data, error;
+
+        runs(function() {
+            volar.broadcasts({site: 'volar'}, function(rt_error, rt_data) {
                 error = rt_error;
                 data = rt_data
                 flag = true;
@@ -25,48 +66,6 @@ describe("connection", function() {
 
         runs(function() {
             expect(error).toBeNull();
-        });
-    });
-
-    it("should fail with invalid api_key", function() {
-        var volar = new Volar('a', secret, base_url);
-        var flag, data, error;
-
-        runs(function() {
-            volar.sites({}, function(rt_error, rt_data) {
-                error = rt_error;
-                data = rt_data
-                flag = true;
-            });
-        });
-
-        waitsFor(function() {
-            return flag;
-        }, "Data and error to be set", 1000);
-
-        runs(function() {
-            expect(error).not.toBeNull();
-        });
-    });
-
-    it("should fail with invalid secret", function() {
-        var volar = new Volar(api_key, 'a', base_url);
-        var flag, data, error;
-
-        runs(function() {
-            volar.sites({}, function(rt_error, rt_data) {
-                error = rt_error;
-                data = rt_data
-                flag = true;
-            });
-        });
-
-        waitsFor(function() {
-            return flag;
-        }, "Data and error to be set", 1000);
-
-        runs(function() {
-            expect(error).not.toBeNull();
         });
     });
 });

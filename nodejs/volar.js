@@ -732,7 +732,14 @@ function request(route, method, req_params, post_body, callback) {
 
             // Make GET request with options
             req(options, function(error, response, body) {
-                callback(null, body);
+                var json_body = JSON.parse(response.body)
+                if(json_body.success || json_body.success === undefined) {
+                    callback(null, body);
+                }
+                else {
+                    error = body;
+                    callback(new Error(error));
+                }
             });
         }
         else {
@@ -763,7 +770,14 @@ function request(route, method, req_params, post_body, callback) {
             // Check that no files to pipe
             if(Object.keys(files).length === 0) {
                 req(options, function(error, response, body) {
-                    callback(null, body);
+                    var json_body = JSON.parse(response.body)
+                    if(json_body.success || json_body.success === undefined) {
+                        callback(null, body);
+                    }
+                    else {
+                        error = body;
+                        callback(new Error(error));
+                    }
                 });
             }
             // Else files need to be piped to request
