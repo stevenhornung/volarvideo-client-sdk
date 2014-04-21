@@ -21,7 +21,7 @@ describe("connection", function() {
 
         waitsFor(function() {
             return flag;
-        }, "Data and error to be set", 1000);
+        }, "Data/error to be set", 1000);
 
         runs(function() {
             expect(error).toBeNull();
@@ -42,7 +42,7 @@ describe("connection", function() {
 
         waitsFor(function() {
             return flag;
-        }, "Data and error to be set", 1000);
+        }, "Data/error to be set", 1000);
 
         runs(function() {
             expect(error).not.toBeNull();
@@ -63,7 +63,7 @@ describe("connection", function() {
 
         waitsFor(function() {
             return flag;
-        }, "Data and error to be set", 1000);
+        }, "Data/error to be set", 1000);
 
         runs(function() {
             expect(error).not.toBeNull();

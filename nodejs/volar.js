@@ -732,7 +732,7 @@ function request(route, method, req_params, post_body, callback) {
 
             // Make GET request with options
             req(options, function(error, response, body) {
-                var json_body = JSON.parse(response.body)
+                var json_body = JSON.parse(response.body);
                 if(json_body.success || json_body.success === undefined) {
                     callback(null, body);
                 }
