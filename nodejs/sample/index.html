@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        table,th,td
+        {
+            border:1px solid black;
+            border-collapse:collapse;
+        }
+        th,td
+        {
+            padding:5px;
+        }
+    </style>
+    <body>
+        <h1 style="text-align:center">Create Volar Video Client CMS Request</h1>
+        <form id="request_form" action="/request">
+            <table style="width:200px;margin-right:auto;margin-left:auto">
+                <tr>
+                    <th>
+                        Request Type:
+                    </th>
+                    <th>
+                        Params:
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="request_type">
+                            <option value="sites">sites</option>
+                            <option value="broadcasts">broadcasts</option>
+                            <option value="broadcast_create">create broadcast</option>
+                            <option value="broadcast_update">update broadcast</option>
+                            <option value="broadcast_delete">delete broadcast</option>
+                            <option value="broadcast_assign_playlist">assign broadcast playlist</option>
+                            <option value="broadcast_remove_playlist">remove broadcast playlist</option>
+                            <option value="broadcast_poster">broadcast poster</option>
+                            <option value="broadcast_archive">archive broadcast</option>
+                            <option value="templates">templates</option>
+                            <option value="template_create">create template</option>
+                            <option value="template_update">update template</option>
+                            <option value="template_delete">delete template</option>
+                            <option value="sections">sections</option>
+                            <option value="playlists">playlists</option>
+                            <option value="playlist_create">create playlist</option>
+                            <option value="playlist_update">update playlist</option>
+                            <option value="playlist_delete">delete playlist</option>
+                        </select>
+                    </td>
+                    <td>
+                        <textarea name="params" rows="4" cols="40" placeholder='Enter request parameters as a valid JSON string. For example: {"site": "volar"}'></textarea>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <input type="submit" value="Submit" style="display:block;margin-right:auto;margin-left:auto">
+        </form>
+    </body>
+</html>
