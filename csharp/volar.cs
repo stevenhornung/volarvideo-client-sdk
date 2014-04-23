@@ -389,33 +389,27 @@ class Volar
 		type = type.ToUpper();
 		parameter_array["api_key"] = this.api_key;
 		string signature = this.buildSignature(route, type, parameter_array, post_body);
-
 		string url = (this.secure ? "https://" : "http://")+this.baseurl+"/";
 		string query_string = "";
 		foreach(KeyValuePair<string,string>kvp in parameter_array)
 		{
-			/*	foreach(value as v_key =>  v_value)
-				{
-					query_string += (query_string ? '&' : '?') + key +'['+urlencode(v_key)+']='+ urlencode(v_value);
-				}
-			else
-				query_string += (query_string ? '&' : '?') +key +'='+ urlencode(value);*/
+            query_string = ((query_string != null) ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
 		}
 		query_string = query_string+"&signature="+signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
-        string[] curl = {""};
-		if((this.execute(url+query_string, type, post_body, "",curl))==null)
+        string response = this.execute(url + query_string, type, post_body, "");
+		if(response==null)
 		{
 			//error string should have already been set
 			return null;
 		}
-        string json = "";
-		//this.debug = url+query_string+"\n"+response;
-		//json = json_decode(response, true);
-	/*	if(isset(json['error']) && !empty(json['error']))
+        SortedDictionary<string,string> json = new SortedDictionary<string,string>();
+		this.debug = url+query_string+"\n"+response;
+		json = JsonConvert.DeserializeObject<SortedDictionary<string,string>>(response);
+		if(json["error"]!=null)
 		{
-			this.error = '('+json['error']['code']+') '+json['error']['message'];
-			return NULL;
-		}*/
+			this.error = "("+json["error"]+")";
+			return null;
+		}
 		return json;
 	}
 	public string buildSignature(string route, string type = "", SortedDictionary<string,string> get_params = null , string post_body = "")
@@ -439,48 +433,52 @@ class Volar
 		return signature;
 	}
 
-	public bool execute(string url, string type, string post_body, string content_type = "", string[] curl_options = null)
+	public string execute(string url, string type, string post_body, string content_type = "")
 	{
-		type = (type.ToUpper());
-        WebClient wc = new WebClient();
-        wc.Headers["Content-Type"] = "application/x-www-form-urlencoded";
-        Uri uri = new Uri(url);
-        Stream stream = wc.OpenRead(uri);
-		//ch = curl_init(url);
-		//curl_setopt(ch, CURLOPT_RETURNTRANSFER, true);	//need the cURL request to come back with response so sdk code can handle it.
-		//curl_setopt(ch, CURLOPT_CUSTOMREQUEST, type);	//set request type
-		if(content_type != null)
-		{
-			//curl_setopt(ch, CURLOPT_HTTPHEADER, content_type);
-		}
-		if((post_body!=null) && type == "POST")
-		{
-			//curl_setopt(ch, CURLOPT_POSTFIELDS, post_body);
-		}
-		else if(type == "POST")	//post_body is empty
-		{
-			this.error = "If type is POST, post_body is expected to be populated as an array or as a non-empty string";
-			return false;
-		}
+        byte[] byteArray = stringToByteArray(post_body);
+        WebRequest request = WebRequest.Create(url);
+        request.ContentType = "application/x-www-form-urlencoded";
+        request.Method = type;
+        // begin write to POST body
+        Stream dataStream = request.GetRequestStream();
+        if (request.Method == "POST")
+        {
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            dataStream.Close();
+        }
+        else
+        {
+            return null;
+        }
+        // end write to POST body
 
-		if( curl_options.Count() > 0)
-		{
-			//curl_setopt_array(ch, curl_options);
-		}
+        // get the response
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+        Console.WriteLine(response.StatusDescription);
 
-	    var response = false;
-		if(!response)
-		{
-			//error = curl_error(ch);
-			//curl_close(ch);
-			this.error = "cURL error: (url) "+error;
-			return false;
-		}
+        // begin read response
+        dataStream = response.GetResponseStream();
+        StreamReader reader = new StreamReader(dataStream);
+        // Read the content. 
+        string responseFromServer = reader.ReadToEnd();
+        // Display the content.
+        Console.WriteLine(responseFromServer);
+        // end read response
+        // Cleanup the streams and the response.
+        reader.Close();
+        dataStream.Close();
+        response.Close();
+        return responseFromServer;
 
-		//curl_close(ch);
+    }
 
-        return response;
-	}
+    // taken from http://stackoverflow.com/questions/472906/converting-a-string-to-byte-array
+    static public byte[] stringToByteArray(string str)
+    {
+        byte[] bytes = new byte[str.Length * sizeof(char)];
+        System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+        return bytes;
+    }
 	
 		static public byte[] sha256(string password)
 	{
