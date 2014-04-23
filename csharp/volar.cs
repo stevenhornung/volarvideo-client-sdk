@@ -1,6 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System;
+using System.Security.Cryptography;
+using System.Web;
+using System.Net;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using System.IO;
+
+
+
 class Volar
 {
-	public string apikey = null;
+	public string api_key = null;
 	public string secret = null;
 	public string baseurl = null;
 	public bool secure = false;
@@ -8,13 +22,13 @@ class Volar
 	
 	private string error = null;
 	
-	public Volar(api_key = '', secret = '', base_url = 'vcloud.volarvideo.com')
+	public Volar(string api_key = "", string secret = "", string base_url = "vcloud.volarvideo.com")
 	{
-		this.apikey = api_key;
+		this.api_key = api_key;
 		this.secret = secret;
 		this.baseurl = base_url;
 	}
-		public getError()
+		public string getError()
 	{
 		return this.error;
 	}
@@ -32,9 +46,9 @@ class Volar
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-		public sites(string[] parameter_array)
+		public object sites(SortedDictionary<string,string> parameter_array)
 	{
-		return this.request('api/client/info', 'GET', parameter_array);
+		return this.request("api/client/info", "GET", parameter_array);
 	}
 		/**
 	 *	gets list of broadcasts
@@ -59,9 +73,9 @@ class Volar
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to desc
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	 	public broadcasts(string[] paramater_array)
+	 	public object broadcasts(SortedDictionary<string,string> parameter_array)
 	{
-		return this.request('api/client/broadcast', 'GET', parameter_array);
+		return this.request("api/client/broadcast", "GET", parameter_array);
 	}
 	/**
 	 *	creates a new broadcast
@@ -83,53 +97,59 @@ class Volar
 	 *				'description'		html formatted text for the description of the broadcast. matches.
 	 *				'section_id'		id of section to assign broadcast to. will default to 'General'.
 	 */
-	public broadcast_create(string[] paramater_array = '')
+	public object broadcast_create(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+        string json = "";
+		
+		if(parameter_array.Count > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
-			
+            json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/broadcast/create', 'POST', array(), paramater);
+		return this.request("api/client/broadcast/create", "POST", new SortedDictionary<string,string>(), json);
 	}
 	
-	public broadcast_update(string[] parameter_array = '')
+	public object broadcast_update(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+        string json = "";
+		if((parameter_array.Count) > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/broadcast/update', 'POST', array(), parameter_array);
+		return this.request("api/client/broadcast/update", "POST", new SortedDictionary<string,string>(), json);
 	}
-		public broadcast_delete(string[] parameter_array = '')
+		public object broadcast_delete(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+        string json = "";
+		if((parameter_array.Count) > 0)
 		{
-		var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+            json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/broadcast/delete', 'POST', array(), parameter_array);
+		return this.request("api/client/broadcast/delete", "POST", new SortedDictionary<string,string>(), json);
 	}
-	public broadcast_remove_playlist(parameter_array = array())
+	public object broadcast_remove_playlist(SortedDictionary<string,string> parameter_array)
 	{
-		return this.request('api/client/broadcast/removeplaylist', 'GET', parameter_array);
+		return this.request("api/client/broadcast/removeplaylist", "GET", parameter_array);
 	}
-		public broadcast_poster(parameter_array = array(), image_path = '', image_name = '')
+		public object broadcast_poster(SortedDictionary<string,string> parameter_array =null, string image_path = "", string image_name = "")
 	{
-		if(!isset(parameter_array['id']))
+		if(parameter_array["id"]!=null)
 		{
-			this.error = 'id is required';
+			this.error = "id is required";
 			return false;
 		}
-		//string post = array('api_poster' => '@'.ltrim(image_path,'@'));
-		if(image_name)
+            string holder = image_path;
+            holder = holder.Replace("@", "");
+            holder = "@"+holder;
+
+		SortedDictionary<string,string> post = new SortedDictionary<string,string>();
+            post.Add("api_poster", holder);
+		if(holder!=null)
 		{
-		//	image_name = str_replace(array(';','"'), '', image_name);
-		//	post['api_poster'] += ';filename='+image_name;
+		image_name = image_name.Replace("''", "");
+        image_name = image_name.Replace(";", "");
+		post["api_poster"] = ";filename="+image_name;
 		}
-		return this.request('api/client/broadcast/poster', 'POST', parameter_array, post);
+		return this.request("api/client/broadcast/poster", "POST", parameter_array, post["api_poster"]);
 	}
 	
 		/**
@@ -146,21 +166,23 @@ class Volar
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
 	 
-	 public broadcast_archive(parameter_array = array(), string file_path = '')
+	 public object broadcast_archive(SortedDictionary<string,string> parameter_array, string file_path = "")
 	{
-		if(!isset(parameter_array['id']))
+		if(parameter_array["id"]==null)
 		{
-			this.error = 'id is required';
-			return false;
+			this.error = "id is required";
+			return null;
 		}
-		if(empty(file_path))
+		if((file_path==""))
 		{
-			return this.request('api/client/broadcast/archive', 'GET', parameter_array);
-		}
+			return this.request("api/client/broadcast/archive", "GET", parameter_array);
+        }
 		else
 		{
-		//	string post = array('archive' => '@'.ltrim(file_path,'@'));
-			return this.request('api/client/broadcast/archive', 'POST', parameter_array, post);
+            string holder = file_path;
+            holder = holder.Replace("@", "");
+            holder = "@"+holder;
+			return this.request("api/client/broadcast/archive", "POST", parameter_array,holder);
 		}
 	}
 	/**
@@ -180,14 +202,14 @@ class Volar
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	 public templates(parameter_array = array())
+	 public object templates(SortedDictionary<string,string> parameter_array)
 	{
-		if(!isset(parameter_array['site']))
+		if(parameter_array["site"]==null)
 		{
-			this.error = '"site" parameter is required';
-			return false;
+			this.error = "'site' parameter is required";
+			return null;
 		}
-		return this.request('api/client/template', 'GET', parameter_array);
+		return this.request("api/client/template", "GET", parameter_array);
 	}
 		/**
 	 *	creates a new meta-data template
@@ -218,14 +240,14 @@ class Volar
 	 *				'description'		text used to describe the template.
 	 *				'section_id'		id of section to assign broadcast to. will default to 'General'.
 	 */
-	 public template_create(string[] parameter_array = '')
+	 public object template_create(SortedDictionary<string,string> parameter_array = null)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+            string json = "";
+		if(parameter_array.Count > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/template/create', 'POST', array(), parameter_array);
+		return this.request("api/client/template/create", "POST", new SortedDictionary<string,string>(), json);
 	}
 	/**
 	 *	update an existing broadcast meta-data template
@@ -240,14 +262,14 @@ class Volar
 	 *				'description'		text for the description of the template.
 	 *				'section_id'		id of section to assign broadcast to.
 	 */
-	public template_update(string[] parameter_array = '')
+	public object template_update(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+        string json = "";
+		if((parameter_array.Count) > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/template/update', 'POST', array(), parameter_array);
+		return this.request("api/client/template/update", "POST", new SortedDictionary<string,string>(), json);
 	}
 	
 	/**
@@ -258,14 +280,14 @@ class Volar
 	 *				'site'				slug of site to assign broadcast to. note that if the api user does not have permission to create broadcasts on the given site, an error will be produced.
 	 *				'id'				id of broadcast that you're updating
 	 */
-	public template_delete(string[] parameter_array = '')
+	public object template_delete(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+            string json = "";
+		if(parameter_array.Count > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/template/delete', 'POST', array(), parameter_array);
+		return this.request("api/client/template/delete", "POST",parameter_array , json);
 	}
 	/**
 	 *	gets list of sections
@@ -286,14 +308,14 @@ class Volar
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	public sections(parameter_array = array())
+	public object sections(SortedDictionary<string,string> parameter_array)
 	{
-		if(!isset(parameter_array['site']) && !isset(parameter_array['sites']))
+		if((parameter_array["site"]!=null) && (parameter_array["sites"]!=null))
 		{
-			this.error = '"site" or "sites" parameter is required';
-			return false;
+			this.error = "'site' or 'sites' parameter is required";
+			return null;
 		}
-		return this.request('api/client/section', 'GET', parameter_array);
+		return this.request("api/client/section", "GET", parameter_array);
 	}
 	
 	/**
@@ -316,72 +338,44 @@ class Volar
 	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending). defaults to asc
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	public playlists(parameter_array = array())
+	public object playlists(SortedDictionary<string,string> parameter_array)
 	{
-		return this.request('api/client/playlist', 'GET', parameter_array);
+		return this.request("api/client/playlist", "GET", parameter_array);
 	}
-	public playlist_create(string[] parameter_array = '')
+	public object playlist_create(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+		string json = "";
+		if(parameter_array.Count > 0)
 		{
-		var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/playlist/create', 'POST', array(), parameter_array);
+		return this.request("api/client/playlist/create", "POST", new SortedDictionary<string,string>(),json);
 	}
-	public playlist_update(string[] parameter_array = '')
+	public object playlist_update(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+		string json = "";
+		if(parameter_array.Count > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/playlist/update', 'POST', array(), parameter_array);
+		return this.request("api/client/playlist/create", "POST", new SortedDictionary<string,string>(),json);
 	}
 
-	public playlist_delete(string[] parameter_array = '')
+	public object playlist_delete(SortedDictionary<string,string> parameter_array)
 	{
-		if(is_array(parameter_array) && count(parameter_array) > 0)
+		string json = "";
+		if(parameter_array.Count > 0)
 		{
-			var serializer = new JavaScriptSerializer();
-			parameter_array = serializer.Serialize(parameter_array);
+			json = JsonConvert.SerializeObject(parameter_array);
 		}
-		return this.request('api/client/playlist/delete', 'POST', array(), parameter_array);
+        return this.request("api/client/playlist/create", "POST", new SortedDictionary<string, string>(), json);
 	}
 
-	public timezones(parameter_array = array())
+	public object timezones(SortedDictionary<string,string> parameter_array)
 	{
-		return this.request('api/client/info/timezones', 'GET', parameter_array);
+		return this.request("api/client/info/timezones", "GET", parameter_array);
 	}
-	/**
-	 *	gets list of videos
-	 *	@param array parameter_array associative array
-	 *			recognized parameters in array:
-	 *				- required -
-	 *				'site'				slug of site to filter to.
-	 *				- optional -
-	 *				'available'			filter based on whether the video is active or inactive.  allowed values are: 'yes', 'active', or 'available' (to get active videos - this is default behavior), 'no', 'inactive', or 'unavailable' (to get all inactive videos), and finally 'all' (to not filter on whether or not the video is set active or inactive)
-	 *				'page'				current page of listings.  pages begin at '1'
-	 *				'per_page'			number of videos to display per page
-	 *				'section_id'		id of section you wish to limit list to
-	 *				'playlist_id'		id of playlist you wish to limit list to
-	 *				'id'				id of broadcast - useful if you only want to get details of a single broadcast
-	 *				'title'				title of broadcast.  useful for searches, as this accepts incomplete titles and returns all matches.
-	 *				'autoplay'			true or false.  defaults to false.  used in embed code to prevent player from immediately playing
-	 *				'embed_width'		width (in pixels) that embed should be.  defaults to 640
-	 *				'sort_by'			data field to use to sort.  allowed fields are status, id, title, description, and playlist (only when playlist_id is supplied)
-	 *				'sort_dir'			direction of sort.  allowed values are 'asc' (ascending) and 'desc' (descending)
-	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
-	 */
-	public videos(parameter_array = array())
-	{
-		if(!isset(parameter_array['site']))
-		{
-			this.error = 'site is required';
-			return false;
-		}
-		return this.request('api/client/video', 'GET', parameter_array);
-	}
+	
 	/**
 	 *	submits request to base_url through route
 	 *	@param string 	route		api uri path (not including base_url!)
@@ -390,100 +384,91 @@ class Volar
 	 *	@param mixed 	post_body	either a string or an array for post requests.  only used if type is POST.  if left null, an error will be returned
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	public request(string route, string type = '', parameter_array = array(), string post_body = null)
+	public object request(string route, string type = "", SortedDictionary<string,string> parameter_array = null , string post_body = null)
 	{
-		type = strtoupper(type ? type : 'GET');
-		parameter_array['api_key'] = this.api_key;
-		signature = this.buildSignature(route, type, parameter_array, post_body);
+		type = type.ToUpper();
+		parameter_array["api_key"] = this.api_key;
+		string signature = this.buildSignature(route, type, parameter_array, post_body);
 
-		//string url = (this.secure ? 'https://' : 'http://').this.base_url.'/'.trim(route, '/');
-		string query_string = '';
-		foreach(parameter_array as key => int value)
+		string url = (this.secure ? "https://" : "http://")+this.baseurl+"/";
+		string query_string = "";
+		foreach(KeyValuePair<string,string>kvp in parameter_array)
 		{
-			if(is_array(value))
-			{
-				foreach(value as v_key => int v_value)
+			/*	foreach(value as v_key =>  v_value)
 				{
-					//query_string += (query_string ? '&' : '?') + key +'['+urlencode(v_key)+']='+ urlencode(v_value);
+					query_string += (query_string ? '&' : '?') + key +'['+urlencode(v_key)+']='+ urlencode(v_value);
 				}
-			}
 			else
-				//query_string += (query_string ? '&' : '?') +key +'='+ urlencode(value);
+				query_string += (query_string ? '&' : '?') +key +'='+ urlencode(value);*/
 		}
-		query_string += '&signature='+signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
-
-		if(!response = this.execute(url+query_string, type, post_body))
+		query_string = query_string+"&signature="+signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
+        string[] curl = {""};
+		if((this.execute(url+query_string, type, post_body, "",curl))==null)
 		{
 			//error string should have already been set
-			return false;
+			return null;
 		}
+        string json = "";
 		//this.debug = url+query_string+"\n"+response;
 		//json = json_decode(response, true);
-		if(isset(json['error']) && !empty(json['error']))
+	/*	if(isset(json['error']) && !empty(json['error']))
 		{
 			this.error = '('+json['error']['code']+') '+json['error']['message'];
-			return false;
-		}
+			return NULL;
+		}*/
 		return json;
 	}
-	public buildSignature(string route, string type = '', get_params = array(), post_body = '')
+	public string buildSignature(string route, string type = "", SortedDictionary<string,string> get_params = null , string post_body = "")
 	{
-		//type = strtoupper(type ? type : 'GET');
-		//ksort(get_params);
-		//stringToSign = this.secret.type.trim(route, '/');
-
-		foreach(get_params as key => value)	//note that get_params are NOT urlencoded
+		//signature here is dependant on the url endpoint.  here, the programmer was
+		//  trying to delete a broadcast.  Ideally, you would want to iterate through the
+		//  sorted params list, append them to the endpoint as per the documentation,
+		//  and use that to generate the signature.
+		var signature = secret + type + route;
+		
+		foreach(KeyValuePair<string,string> kvp in get_params)
 		{
-			if(is_array(value))
-			{
-				ksort(value);
-				foreach(value as v_key => v_value)
-				{
-					stringToSign += key+'['+v_key+']='+v_value;
-				}
-			}
-			else
-			{
-				stringToSign += key+'='+value;
-			}
+				signature= signature + kvp.Key + "=" + kvp.Value;
 		}
-
-		if(!is_array(post_body))
-			stringToSign += post_body;
-
-	//	string signature = base64_encode(hash('sha256', stringToSign, true));
-	//	string signature = urlencode(substr(signature, 0, 43));
-	//	string signature = rtrim(signature, '=');
-
+		signature = signature +post_body;
+		var test = sha256(signature); //hash the string using sha256
+		signature = EncodeTo64(test); //base64 encode the result
+		signature = signature.Remove(43); //trim to the first 43 chars
+		signature = signature.TrimEnd(new[] {'='}); //remove trailing '=' chars
+		signature = WebUtility.UrlEncode(signature);
 		return signature;
 	}
 
-	public execute(string url, string type, string post_body, string content_type = '', curl_options = array())
+	public bool execute(string url, string type, string post_body, string content_type = "", string[] curl_options = null)
 	{
-		//type = strtoupper(type);
+		type = (type.ToUpper());
+        WebClient wc = new WebClient();
+        wc.Headers["Content-Type"] = "application/x-www-form-urlencoded";
+        Uri uri = new Uri(url);
+        Stream stream = wc.OpenRead(uri);
 		//ch = curl_init(url);
 		//curl_setopt(ch, CURLOPT_RETURNTRANSFER, true);	//need the cURL request to come back with response so sdk code can handle it.
 		//curl_setopt(ch, CURLOPT_CUSTOMREQUEST, type);	//set request type
-		if(content_type)
+		if(content_type != null)
 		{
 			//curl_setopt(ch, CURLOPT_HTTPHEADER, content_type);
 		}
-		if(!empty(post_body) && type == 'POST')
+		if((post_body!=null) && type == "POST")
 		{
 			//curl_setopt(ch, CURLOPT_POSTFIELDS, post_body);
 		}
-		elseif(type == 'POST')	//post_body is empty
+		else if(type == "POST")	//post_body is empty
 		{
-			this.error = 'If type is POST, post_body is expected to be populated as an array or as a non-empty string';
+			this.error = "If type is POST, post_body is expected to be populated as an array or as a non-empty string";
 			return false;
 		}
 
-		if(count(curl_options) > 0)
+		if( curl_options.Count() > 0)
 		{
 			//curl_setopt_array(ch, curl_options);
 		}
 
-		//response = curl_exec(ch);
+	    var response = false;
 		if(!response)
 		{
 			//error = curl_error(ch);
@@ -496,5 +481,18 @@ class Volar
 
         return response;
 	}
-}
+	
+		static public byte[] sha256(string password)
+	{
+		var crypt = new SHA256Managed();
+		string hash = String.Empty;
+		byte[] crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(password), 0, Encoding.UTF8.GetByteCount(password));
 
+		return crypto;
+	}
+
+	static public string EncodeTo64(byte[] toEncode)
+	{
+		return Convert.ToBase64String(toEncode);
+	}
+}
