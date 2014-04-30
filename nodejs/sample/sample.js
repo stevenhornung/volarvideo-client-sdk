@@ -29,16 +29,49 @@ app.get('/request', function(req, res) {
 
     var request_type = query.request_type;
     var params = query.params || '{}';
+    var upload_name = query.upload_name || "";
+    var archive_name = query.archive_name || "";
+    var filepath = query.file_path || "";
 
     try {
-        volar[request_type](params, function(error, data) {
-            if(error) {
-                res.send(error.message);
-                return;
-            }
+        params = JSON.parse(params);
 
-            res.send(data);
-        })
+        if(request_type === "broadcast_poster") {
+            volar.broadcast_poster(params, filepath, upload_name, function(error, data) {
+                if(error) {
+                    res.write(JSON.stringify(error.message));
+                    res.end();
+                    return;
+                }
+
+                res.write(JSON.stringify(data));
+                res.end();
+            })
+        }
+        else if(request_type === "broadcast_archive") {
+            volar.broadcast_archive(params, archive_name, function(error, data) {
+                if(error) {
+                    res.write(JSON.stringify(error.message));
+                    res.end();
+                    return;
+                }
+
+                res.write(JSON.stringify(data));
+                res.end();
+            })
+        }
+        else {
+            volar[request_type](params, function(error, data) {
+                if(error) {
+                    res.write(JSON.stringify(error.message));
+                    res.end();
+                    return;
+                }
+
+                res.write(JSON.stringify(data));
+                res.end();
+            });
+        }
     }
     catch(e) {
         res.send(400, "Invalid JSON string supplied");
@@ -47,4 +80,4 @@ app.get('/request', function(req, res) {
 
 // Start server
 app.listen(8888);
-console.log("Server started. Listening at 127.0.0.1:8888");
+console.log("Server started. Listening at <http://127.0.0.1:8888>.  Press Ctl-C to stop.");

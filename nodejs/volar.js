@@ -55,7 +55,6 @@ Volar.prototype.sites = function(params, callback) {
 		be used to get last error string
 	*/
 
-    params = JSON.parse(params);
 	request(route = 'api/client/info', method = 'GET', req_params = params, null, callback);
 }
 
@@ -99,8 +98,6 @@ Volar.prototype.broadcasts = function(params, callback) {
 	@return false on failure, dict on success.  if failed, Volar.error can
 		be used to get last error string
 	*/
-
-    params = JSON.parse(params);
 
 	if(!params['site'] && !params['sites']) {
         error = "'site' or 'sites' parameter is required";
@@ -147,8 +144,6 @@ Volar.prototype.broadcast_create = function(params, callback) {
 			'errors' : list of errors to give reason(s) for failure
 	}
 	*/
-
-    params = JSON.parse(params);
 
 	var site = params['site'];
     delete params['site'];
@@ -200,8 +195,6 @@ Volar.prototype.broadcast_update = function(params, callback) {
 			}
     */
 
-    params = JSON.parse(params);
-
     var site = params['site'];
     delete params['site'];
 
@@ -220,8 +213,6 @@ Volar.prototype.broadcast_delete = function(params, callback) {
 
     the only parameter (aside from 'site') that this function takes is 'id'
     */
-
-    params = JSON.parse(params);
 
     var site = params['site'];
     delete params['site'];
@@ -244,8 +235,6 @@ Volar.prototype.broadcast_assign_playlist = function(params, callback) {
 		@return dict { 'success' : True }
     */
 
-    params = JSON.parse(params);
-
     var site = params['site'];
     delete params['site'];
 
@@ -267,8 +256,6 @@ Volar.prototype.broadcast_remove_playlist = function(params, callback) {
 		'playlist_id' : id of playlist
 	@return dict { 'success' : True }
 	*/
-
-    params = JSON.parse(params);
 
     var site = params['site'];
     delete params['site'];
@@ -305,8 +292,6 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
 		}
 	*/
 
-    params = JSON.parse(params);
-
 	if(file_path === '') {
 		request(route = 'api/client/broadcast/poster', method = 'GET', req_params = params, null, callback);
     }
@@ -323,7 +308,7 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
     }
 }
 
-Volar.prototype.broadcast_archive = function(params, file_path) {
+Volar.prototype.broadcast_archive = function(params, file_path, callback) {
 	/*
 	archives a broadcast.
 
@@ -346,13 +331,11 @@ Volar.prototype.broadcast_archive = function(params, file_path) {
 		}
 	*/
 
-    params = JSON.parse(params);
-
 	if(file_path === '') {
 		request(route = 'api/client/broadcast/archive', method = 'GET', req_params = params, null, callback);
     }
 	else {
-		var post = //{'files' : { 'archive': open(file_path, 'rb')}}
+		var post = {'files' : { 'archive': file_path}};
 		request(route = 'api/client/broadcast/archive', method = 'POST', req_params = params, post_body = post, callback);
     }
 }
@@ -382,13 +365,8 @@ Volar.prototype.templates = function(params, callback) {
 
     */
 
-    params = JSON.parse(params);
-
-    var site = params['site'];
-    delete params['site'];
-
-    if(site === undefined) {
-        error = "site is required";
+    if(!params['site']) {
+        error = "'site' parameter is required";
         callback(new Error(error));
         return;
     }
@@ -456,8 +434,6 @@ Volar.prototype.template_create = function(params, callback) {
 			}
     */
 
-    params = JSON.parse(params);
-
     var site = params['site'];
     delete params['site'];
 
@@ -498,8 +474,6 @@ Volar.prototype.template_update = function(params, callback) {
 				the permissions set for you to modify.  keep this in mind when updating templates.
     */
 
-    params = JSON.parse(params);
-
     var site = params['site'];
     delete params['site'];
 
@@ -518,8 +492,6 @@ Volar.prototype.template_delete = function(params, callback) {
 
 	the only parameter (aside from 'site') that this function takes is 'id'
     */
-
-    params = JSON.parse(params);
 
     var site = params['site'];
     delete params['site'];
@@ -561,8 +533,6 @@ Volar.prototype.sections = function(params, callback) {
 			be used to get last error string
     */
 
-    params = JSON.parse(params);
-
     if(!params['site'] && !params['sites']) {
         error = "'site' or 'sites' parameter is required";
         callback(new Error(error));
@@ -601,8 +571,6 @@ Volar.prototype.playlists = function(params, callback) {
 			be used to get last error string
     */
 
-    params = JSON.parse(params);
-
     if(!params['site'] && !params['sites']) {
         error = "'site' or 'sites' parameter is required";
         callback(new Error(error));
@@ -639,8 +607,6 @@ Volar.prototype.playlist_create = function(params, callback) {
 					'errors' : list of errors to give reason(s) for failure
 			}
     */
-
-    params = JSON.parse(params);
 
     var site = params['site'];
     delete params['site'];
@@ -683,8 +649,6 @@ Volar.prototype.playlist_update = function(params, callback) {
 			}
     */
 
-    params = JSON.parse(params);
-
     var site = params['site'];
     delete params['site'];
 
@@ -703,8 +667,6 @@ Volar.prototype.playlist_delete = function(params, callback) {
 
 	the only parameter (aside from 'site') that this function takes is 'id'
     */
-
-    params = JSON.parse(params);
 
     var site = params['site'];
     delete params['site'];
@@ -770,11 +732,12 @@ function request(route, method, req_params, post_body, callback) {
 
             // Make GET request with options
             req(options, function(error, response, body) {
+                body = JSON.parse(body);
                 if(body.success || body.success === undefined) {
                     callback(null, body);
                 }
                 else {
-                    error = body;
+                    error = JSON.stringify(body);
                     callback(new Error(error));
                 }
             });
@@ -807,20 +770,28 @@ function request(route, method, req_params, post_body, callback) {
             // Check that no files to pipe
             if(Object.keys(files).length === 0) {
                 req(options, function(error, response, body) {
+                    //body = JSON.parse(body);
                     if(body.success || body.success === undefined) {
                         callback(null, body);
                     }
                     else {
-                        error = body;
+                        error = JSON.stringify(body);
                         callback(new Error(error));
                     }
                 });
             }
             // Else files need to be piped to request
             else {
-                var file = files['api_poster'];
-                fs.createReadStream(file[file.length-1]).pipe(req(options, function(error, response, body) {
-                    callback(null, body);
+                var file = files['api_poster'][1] || files['archive'];
+                fs.createReadStream(file).pipe(req(options, function(error, response, body) {
+                    //body = JSON.parse(body);
+                    if(body.success || body.success === undefined) {
+                        callback(null, body);
+                    }
+                    else {
+                        error = JSON.stringify(body);
+                        callback(new Error(error));
+                    }
                 }));
             }
         }

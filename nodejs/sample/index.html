@@ -11,8 +11,33 @@
             padding:5px;
         }
     </style>
+
+    <script>
+        window.onload = function() {
+            checkToShowSpecial();
+        };
+
+        function checkToShowSpecial() {
+            if(document.getElementById("function_select").value == "broadcast_poster") {
+                document.getElementById("file_header").style.display = "";
+                document.getElementById("file_upload_body").style.display = "";
+                document.getElementById("file_archive_body").style.display = "none";
+            }
+            else if(document.getElementById("function_select").value == "broadcast_archive") {
+                document.getElementById("file_header").style.display = "";
+                document.getElementById("file_archive_body").style.display = "";
+                document.getElementById("file_upload_body").style.display = "none";
+            }
+            else {
+                document.getElementById("file_header").style.display = "none";
+                document.getElementById("file_upload_body").style.display = "none";
+                document.getElementById("file_archive_body").style.display = "none";
+            }
+        };
+    </script>
+
     <body>
-        <h1 style="text-align:center">Create Volar Video Client CMS Request</h1>
+        <h1 style="text-align:center">Volar Video Client CMS Request -- Node.js</h1>
         <form id="request_form" action="/request">
             <table style="width:200px;margin-right:auto;margin-left:auto">
                 <tr>
@@ -22,10 +47,13 @@
                     <th>
                         Params:
                     </th>
+                    <th id="file_header" style="display:none">
+                        File:
+                    </th>
                 </tr>
                 <tr>
                     <td>
-                        <select name="request_type">
+                        <select id="function_select" name="request_type" onchange="checkToShowSpecial()">
                             <option value="sites">sites</option>
                             <option value="broadcasts">broadcasts</option>
                             <option value="broadcast_create">create broadcast</option>
@@ -48,6 +76,13 @@
                     </td>
                     <td>
                         <textarea name="params" rows="4" cols="40" placeholder='Enter request parameters as a valid JSON string. For example: {"site": "volar"}'></textarea>
+                    </td>
+                    <td id="file_upload_body" style="display:none">
+                        File name: <input type="text" size="50" name="upload_name">
+                        File path: <input type="text" size="50" name="file_path">
+                    </td>
+                    <td id="file_archive_body" style="display:none">
+                        File name: <input type="text" size="50" name="archive_name">
                     </td>
                 </tr>
             </table>
