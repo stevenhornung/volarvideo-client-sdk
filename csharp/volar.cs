@@ -19,9 +19,9 @@ class Volar
 	public string baseurl = null;
 	public bool secure = false;
 	public string debug = null;
-	
+
 	private string error = null;
-	
+
 	public Volar(string api_key = "", string secret = "", string base_url = "vcloud.volarvideo.com")
 	{
 		this.api_key = api_key;
@@ -100,14 +100,14 @@ class Volar
 	public object broadcast_create(SortedDictionary<string,string> parameter_array)
 	{
         string json = "";
-		
+
 		if(parameter_array.Count > 0)
 		{
             json = JsonConvert.SerializeObject(parameter_array);
 		}
 		return this.request("api/client/broadcast/create", "POST", new SortedDictionary<string,string>(), json);
 	}
-	
+
 	public object broadcast_update(SortedDictionary<string,string> parameter_array)
 	{
         string json = "";
@@ -151,7 +151,7 @@ class Volar
 		}
 		return this.request("api/client/broadcast/poster", "POST", parameter_array, post["api_poster"]);
 	}
-	
+
 		/**
 	 *	archives a broadcast
 	 *	@param array parameter_array associative array
@@ -165,7 +165,7 @@ class Volar
 	 *				archive the existing video data, omit this argument.
 	 *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
 	 */
-	 
+
 	 public object broadcast_archive(SortedDictionary<string,string> parameter_array, string file_path = "")
 	{
 		if(parameter_array["id"]==null)
@@ -271,7 +271,7 @@ class Volar
 		}
 		return this.request("api/client/template/update", "POST", new SortedDictionary<string,string>(), json);
 	}
-	
+
 	/**
 	 *	delete an existing broadcast meta-data template.  note that this does not affect template data attached to broadcasts, only the template.
 	 *	@param mixed parameter_array associative array or json string
@@ -317,7 +317,7 @@ class Volar
 		}
 		return this.request("api/client/section", "GET", parameter_array);
 	}
-	
+
 	/**
 	 *	gets list of playlists
 	 *	@param array parameter_array associative array
@@ -375,7 +375,7 @@ class Volar
 	{
 		return this.request("api/client/info/timezones", "GET", parameter_array);
 	}
-	
+
 	/**
 	 *	submits request to base_url through route
 	 *	@param string 	route		api uri path (not including base_url!)
@@ -393,18 +393,18 @@ class Volar
 		string query_string = "";
 		foreach(KeyValuePair<string,string>kvp in parameter_array)
 		{
-            query_string = ((query_string != null) ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
+            query_string += ((query_string != "") ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
 		}
 		query_string = query_string+"&signature="+signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
-        string response = this.execute(url + query_string, type, post_body, "");
+        string response = this.execute(url + route + query_string, type, post_body, "");
 		if(response==null)
 		{
 			//error string should have already been set
 			return null;
 		}
-        SortedDictionary<string,string> json = new SortedDictionary<string,string>();
-		this.debug = url+query_string+"\n"+response;
-		json = JsonConvert.DeserializeObject<SortedDictionary<string,string>>(response);
+        //SortedDictionary<string,string> json = new SortedDictionary<string,string>();
+		this.debug = url+route+query_string+"\n"+response;
+		dynamic json = JsonConvert.DeserializeObject(response);
 		if(json["error"]!=null)
 		{
 			this.error = "("+json["error"]+")";
@@ -419,7 +419,7 @@ class Volar
 		//  sorted params list, append them to the endpoint as per the documentation,
 		//  and use that to generate the signature.
 		var signature = secret + type + route;
-		
+
 		foreach(KeyValuePair<string,string> kvp in get_params)
 		{
 				signature= signature + kvp.Key + "=" + kvp.Value;
@@ -435,13 +435,13 @@ class Volar
 
 	public string execute(string url, string type, string post_body, string content_type = "")
 	{
-        byte[] byteArray = stringToByteArray(post_body);
+        //byte[] byteArray = stringToByteArray(post_body);
         WebRequest request = WebRequest.Create(url);
         request.ContentType = "application/x-www-form-urlencoded";
         request.Method = type;
         // begin write to POST body
-        Stream dataStream = request.GetRequestStream();
-        if (request.Method == "POST")
+        //Stream dataStream = request.GetRequestStream();
+        /*if (request.Method == "POST")
         {
             dataStream.Write(byteArray, 0, byteArray.Length);
             dataStream.Close();
@@ -449,26 +449,36 @@ class Volar
         else
         {
             return null;
-        }
+        }*/
         // end write to POST body
 
         // get the response
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        Console.WriteLine(response.StatusDescription);
+
+        Stream receiveStream = response.GetResponseStream();
+        StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+
+        string responseToReturn = readStream.ReadToEnd();
+
+        response.Close();
+        readStream.Close();
+
+
+
 
         // begin read response
-        dataStream = response.GetResponseStream();
-        StreamReader reader = new StreamReader(dataStream);
-        // Read the content. 
-        string responseFromServer = reader.ReadToEnd();
+        //dataStream = response.GetResponseStream();
+        ///StreamReader reader = new StreamReader(dataStream);
+        // Read the content.
+        //string responseFromServer = reader.ReadToEnd();
         // Display the content.
-        Console.WriteLine(responseFromServer);
+        //Console.WriteLine(responseFromServer);
         // end read response
         // Cleanup the streams and the response.
-        reader.Close();
-        dataStream.Close();
-        response.Close();
-        return responseFromServer;
+        //reader.Close();
+        //dataStream.Close();
+        //response.Close();
+        return responseToReturn;
 
     }
 
@@ -479,7 +489,7 @@ class Volar
         System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
         return bytes;
     }
-	
+
 		static public byte[] sha256(string password)
 	{
 		var crypt = new SHA256Managed();
