@@ -7,9 +7,9 @@ var api_key = config.api_key,
 
 
 describe("Section", function() {
+    var volar = new Volar(api_key, secret, base_url);
 
-    it("can fetch sections", function() {
-        var volar = new Volar(api_key, secret, base_url);
+    it("can fetch sections with valid site", function() {
         var flag, data, error;
 
         runs(function() {
@@ -26,8 +26,29 @@ describe("Section", function() {
         }, "data/error to be set", 5000);
 
         runs(function() {
-            expect(data).toBeDefined();
-            expect(error).toBeNull();
+            expect(data.sections).toBeDefined();
+        });
+    });
+
+    it("fails to fetch sections with bad site", function() {
+        var flag, data, error;
+
+        runs(function() {
+            var params = {"site": "bad_site"};
+            volar.sections(params, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "data/error to be set", 5000);
+
+        runs(function() {
+            expect(data.sections).not.toBeDefined();
+            expect(data.success).toBe(false);
         });
     });
 });

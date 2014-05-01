@@ -26,8 +26,7 @@ describe("Sites", function() {
         }, "data/error to be set", 5000);
 
         runs(function() {
-            expect(data).not.toBeNull();
-            expect(error).toBeNull();
+            expect(data.sites).toBeDefined();
         });
     });
 });

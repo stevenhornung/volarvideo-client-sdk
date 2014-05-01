@@ -10,7 +10,7 @@ describe("Playlists", function() {
     var volar = new Volar(api_key, secret, base_url);
     var playlist;
 
-    it("can fetch playlists", function() {
+    it("can fetch playlists with valid site", function() {
         var flag, data, error;
 
         runs(function() {
@@ -27,8 +27,29 @@ describe("Playlists", function() {
         }, "data/error to be set", 5000);
 
         runs(function() {
-            expect(data).not.toBeNull();
-            expect(error).toBeNull();
+            expect(data.playlists).toBeDefined();
+        });
+    });
+
+    it("fails to fetch playlists with invalid site", function() {
+        var flag, data, error;
+
+        runs(function() {
+            var params = {"site": "bad_site"};
+            volar.playlists(params, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "data/error to be set", 5000);
+
+        runs(function() {
+            expect(data.playlists).not.toBeDefined();
+            expect(data.success).toBe(false);
         });
     });
 
@@ -52,6 +73,29 @@ describe("Playlists", function() {
             expect(data.success).toBe(true);
             expect(data.playlist.id).toBeDefined();
             playlist = data.playlist;
+        });
+    });
+
+    it("fails to create a playlist with missing params", function() {
+        var flag, data, error;
+
+        runs(function() {
+            var params = {"site": "sdk-tests"};
+            volar.playlist_create(params, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "data/error to be set", 5000);
+
+        runs(function() {
+            expect(data.success).toBe(false);
+            expect(data.playlist).not.toBeDefined();
+            expect(data.error || data.errors).toBeDefined();
         });
     });
 
@@ -94,6 +138,28 @@ describe("Playlists", function() {
 
         runs(function() {
             expect(data.success).toBe(true);
+        });
+    });
+
+    it("fails to update playlist with missing param", function() {
+        var flag, data, error;
+
+        runs(function() {
+            var params = {"site": "sdk-tests", "title": "Playlist_Title_Update"};
+            volar.playlist_update(params, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "data/error to be set", 5000);
+
+        runs(function() {
+            expect(data.success).toBe(false);
+            expect(data.error || data.errors).toBeDefined();
         });
     });
 
@@ -238,6 +304,28 @@ describe("Playlists", function() {
 
         runs(function() {
             expect(data.success).toBe(true);
+        });
+    });
+
+    it("fails to delete a playlist with missing param", function() {
+        var flag, data, error;
+
+        runs(function() {
+            var params = {"site": "sdk-tests"};
+            volar.playlist_delete(params, function(rt_error, rt_data) {
+                error = rt_error;
+                data = rt_data
+                flag = true;
+            });
+        });
+
+        waitsFor(function() {
+            return flag;
+        }, "data/error to be set", 5000);
+
+        runs(function() {
+            expect(data.success).toBe(false);
+            expect(data.error || data.errors).toBeDefined();
         });
     });
 });

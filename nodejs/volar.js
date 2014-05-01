@@ -731,12 +731,12 @@ function request(route, method, req_params, post_body, callback) {
 
             // Make GET request with options
             req(options, function(error, response, body) {
-                if(body.success || body.success === undefined) {
-                    callback(null, body);
+                if(error) {
+                    callback(new Error(error));
                 }
                 else {
-                    error = JSON.stringify(body);
-                    callback(new Error(error));
+                    body = JSON.parse(body)
+                    callback(null, body)
                 }
             });
         }
@@ -768,12 +768,11 @@ function request(route, method, req_params, post_body, callback) {
             // Check that no files to pipe
             if(Object.keys(files).length === 0) {
                 req(options, function(error, response, body) {
-                    if(body.success || body.success === undefined) {
-                        callback(null, body);
+                    if(error) {
+                        callback(new Error(error));
                     }
                     else {
-                        error = JSON.stringify(body);
-                        callback(new Error(error));
+                        callback(null, body)
                     }
                 });
             }
@@ -781,12 +780,11 @@ function request(route, method, req_params, post_body, callback) {
             else {
                 var file = files['api_poster'] || files['archive'];
                 file.pipe(req(options, function(error, response, body) {
-                    if(body.success || body.success === undefined) {
-                        callback(null, body);
+                    if(error) {
+                        callback(new Error(error));
                     }
                     else {
-                        error = JSON.stringify(body);
-                        callback(new Error(error));
+                        callback(null, body)
                     }
                 }));
             }
@@ -820,7 +818,7 @@ function build_signature(route, method, params, post_body) {
         }
     }
 
-    if(typeof post_body === "string") {
+    if(post_body !== "null" && typeof post_body === "string") {
         signature += post_body;
     }
 
