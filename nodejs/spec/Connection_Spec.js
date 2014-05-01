@@ -30,7 +30,7 @@ describe("Connection", function() {
         });
     });
 
-    it("should fail with invalid api_key", function() {
+    xit("should fail with invalid api_key", function() {
         var volar = new Volar('a', secret, base_url);
         var flag, data, error;
 
@@ -52,7 +52,7 @@ describe("Connection", function() {
         });
     });
 
-    it("should fail with invalid secret", function() {
+    xit("should fail with invalid secret", function() {
         var volar = new Volar(api_key, 'a', base_url);
         var flag, data, error;
 

@@ -13,7 +13,8 @@ describe("Sites", function() {
         var flag, data, error;
 
         runs(function() {
-            volar.sites({}, function(rt_error, rt_data) {
+            var params = {};
+            volar.sites(params, function(rt_error, rt_data) {
                 error = rt_error;
                 data = rt_data
                 flag = true;

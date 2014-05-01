@@ -41,7 +41,6 @@ describe("Broadcasts", function() {
                 error = rt_error;
                 data = rt_data
                 flag = true;
-                broadcast = data.broadcast;
             });
         });
 
@@ -51,7 +50,8 @@ describe("Broadcasts", function() {
 
         runs(function() {
             expect(data.success).toBe(true);
-            expect(broadcast.id).toBeDefined();
+            expect(data.broadcast.id).toBeDefined();
+            broadcast = data.broadcast;
         });
     });
 
@@ -123,7 +123,7 @@ describe("Broadcasts", function() {
 
         runs(function() {
             var params = {"site": "sdk-tests", "id": broadcast.id};
-            var file_path = "nodejs-logo.jpeg"
+            var file_path = "/spec/nodejs-logo.jpeg"
             volar.broadcast_poster(params, file_path, function(rt_error, rt_data) {
                 error = rt_error;
                 data = rt_data

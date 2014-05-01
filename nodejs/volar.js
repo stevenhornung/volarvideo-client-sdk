@@ -269,7 +269,7 @@ Volar.prototype.broadcast_remove_playlist = function(params, callback) {
 	request(route = 'api/client/broadcast/removeplaylist', method = 'GET', req_params = params, null, callback);
 }
 
-Volar.prototype.broadcast_poster = function(params, file_path, filename, callback) {
+Volar.prototype.broadcast_poster = function(params, file_path, callback) {
 	/*
 	uploads an image file as the poster for a broadcast.
 
@@ -292,18 +292,17 @@ Volar.prototype.broadcast_poster = function(params, file_path, filename, callbac
 		}
 	*/
 
+    if(!params['site']) {
+        error = "'site' parameter is required";
+        callback(new Error(error));
+        return;
+    }
+
 	if(file_path === '') {
 		request(route = 'api/client/broadcast/poster', method = 'GET', req_params = params, null, callback);
     }
 	else {
-        var post;
-		if(filename !== '') {
-			post = {'files' : { 'api_poster': [filename, file_path]}};
-        }
-		else{
-			post = {'files' : { 'api_poster': file_path}};
-        }
-
+        var post = {"files": {"api_poster": fs.createReadStream(__dirname + file_path)}};
         request(route = 'api/client/broadcast/poster', method = 'POST', req_params = params, post_body = post, callback);
     }
 }
@@ -335,7 +334,7 @@ Volar.prototype.broadcast_archive = function(params, file_path, callback) {
 		request(route = 'api/client/broadcast/archive', method = 'GET', req_params = params, null, callback);
     }
 	else {
-		var post = {'files' : { 'archive': file_path}};
+		var post = {"files": {'archive': fs.createReadStream(__dirname + file_path)}};
 		request(route = 'api/client/broadcast/archive', method = 'POST', req_params = params, post_body = post, callback);
     }
 }
@@ -732,7 +731,6 @@ function request(route, method, req_params, post_body, callback) {
 
             // Make GET request with options
             req(options, function(error, response, body) {
-                body = JSON.parse(body);
                 if(body.success || body.success === undefined) {
                     callback(null, body);
                 }
@@ -770,7 +768,6 @@ function request(route, method, req_params, post_body, callback) {
             // Check that no files to pipe
             if(Object.keys(files).length === 0) {
                 req(options, function(error, response, body) {
-                    //body = JSON.parse(body);
                     if(body.success || body.success === undefined) {
                         callback(null, body);
                     }
@@ -782,9 +779,8 @@ function request(route, method, req_params, post_body, callback) {
             }
             // Else files need to be piped to request
             else {
-                var file = files['api_poster'][1] || files['archive'];
-                fs.createReadStream(file).pipe(req(options, function(error, response, body) {
-                    //body = JSON.parse(body);
+                var file = files['api_poster'] || files['archive'];
+                file.pipe(req(options, function(error, response, body) {
                     if(body.success || body.success === undefined) {
                         callback(null, body);
                     }
@@ -824,7 +820,7 @@ function build_signature(route, method, params, post_body) {
         }
     }
 
-    if(post_body !== "null" && post_body !== null) {
+    if(typeof post_body === "string") {
         signature += post_body;
     }
 
@@ -845,22 +841,11 @@ function get_options(route, params, method, data) {
         protocol = "http://";
     }
 
-    var options
-
-    if(data) {
-        options = {
+    var options = {
             uri: protocol + base_url.trimRight("/") + "/" + route + "?" + params,
             method: method,
             json: data
-        };
-    }
-    else {
-        options = {
-            uri: protocol + base_url.trimRight("/") + "/" + route + "?" + params,
-            method: method
-        };
-
-    }
+    };
 
     return options;
 }

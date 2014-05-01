@@ -50,7 +50,7 @@ describe("Playlists", function() {
 
         runs(function() {
             expect(data.success).toBe(true);
-            expect(playlist.id).toBeDefined();
+            expect(data.playlist.id).toBeDefined();
             playlist = data.playlist;
         });
     });
@@ -99,7 +99,7 @@ describe("Playlists", function() {
 
     it("can assign a broadcast to a playlist", function() {
         var flag, data, error;
-        var broadcast
+        var broadcast;
 
         // Create broadcast to assign to a playlist
         runs(function() {
@@ -160,6 +160,7 @@ describe("Playlists", function() {
 
     it("can remove a broadcast from a playlist", function() {
         var flag, data, error;
+        var broadcast;
 
         // Create broadcast to assign to a playlist
         runs(function() {
