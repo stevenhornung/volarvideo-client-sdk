@@ -105,6 +105,8 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string,string>>(parameter_array));
         }
+        Console.Write("this is the post body passed with broadcast create:");
+        Console.Write(json);
         return this.request("api/client/broadcast/create", "POST", parameter_array, json);
     }
 
@@ -396,6 +398,7 @@ class Volar
             query_string += ((query_string != "") ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
         }
         query_string = query_string + "&signature=" + signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
+        //Console.Write("this is the post body:"+post_body);
         string response = this.execute(url + route + query_string, type, post_body, "");
         if (response == null)
         {
@@ -435,13 +438,13 @@ class Volar
 
     public string execute(string url, string type, string post_body, string content_type = "")
     {
-        //byte[] byteArray = stringToByteArray(post_body);
+       // byte[] byteArray = stringToByteArray(post_body);
         WebRequest request = WebRequest.Create(url);
         request.ContentType = "application/x-www-form-urlencoded";
         request.Method = type;
         // begin write to POST body
-        //Stream dataStream = request.GetRequestStream();
-        /*if (request.Method == "POST")
+        /*Stream dataStream = request.GetRequestStream();
+        if (request.Method == "POST")
         {
             dataStream.Write(byteArray, 0, byteArray.Length);
             dataStream.Close();
