@@ -14,15 +14,16 @@ namespace ConsoleApplication1
             SortedDictionary<string, string> parameter_array = new SortedDictionary<string, string>();
             SortedDictionary<string, string> other_array = new SortedDictionary<string, string>();
             Console.Write(volar.sites(parameter_array));
-            other_array.Add("site","MockC#");
-            other_array.Add("title", "fakecast");			
-     		other_array.Add("contact_name", "Bret Michaels");		
-    		other_array.Add("contact_phone","555-555-5555");
-            other_array.Add("contact_email", "fakemail@somewhere.com");
+            parameter_array.Add("title", "fakecast");
+            parameter_array.Add("contact_name", "Bret Michaels");
+            parameter_array.Add("contact_phone", "555-555-5555");
+            parameter_array.Add("contact_email", "fakemail@somewhere.com");
             parameter_array.Add("site", "volar");
-            Console.Write(volar.broadcast_create(other_array));
+           // Console.Write(volar.broadcast_create(other_array));
             //Console.Write(volar.broadcasts(parameter_array));
-            //Console.Write(volar.sites(other_array));
+           // Console.Write(volar.sites(other_array));
+            Console.Write(volar.sites(parameter_array));
+            Console.Write(volar.broadcast_create(parameter_array));
             Console.ReadLine();
         }
     }
