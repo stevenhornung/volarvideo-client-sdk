@@ -12,11 +12,17 @@ namespace ConsoleApplication1
         {
             Volar volar = new Volar("DD50i3XVTpnRni7loUx9EwEmDi0sQmh1", "v|HW]gHun1ArVX-V6!E/b1S)BRYSnwl)", "uk.volarvideo.com");
             SortedDictionary<string, string> parameter_array = new SortedDictionary<string, string>();
-
+            SortedDictionary<string, string> other_array = new SortedDictionary<string, string>();
             Console.Write(volar.sites(parameter_array));
-
+            other_array.Add("site","MockC#");
+            other_array.Add("title", "fakecast");			
+     		other_array.Add("contact_name", "Bret Michaels");		
+    		other_array.Add("contact_phone","555-555-5555");
+            other_array.Add("contact_email", "fakemail@somewhere.com");
             parameter_array.Add("site", "volar");
-            Console.Write(volar.broadcasts(parameter_array));
+            Console.Write(volar.broadcast_create(other_array));
+            //Console.Write(volar.broadcasts(parameter_array));
+            //Console.Write(volar.sites(other_array));
             Console.ReadLine();
         }
     }
