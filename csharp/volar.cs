@@ -103,7 +103,7 @@ class Volar
 
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string,string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         Console.Write("this is the post body passed with broadcast create:");
         Console.Write(json);
@@ -115,7 +115,7 @@ class Volar
         string json = "";
         if ((parameter_array.Count) > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/broadcast/update", "POST", parameter_array, json);
     }
@@ -124,7 +124,7 @@ class Volar
         string json = "";
         if ((parameter_array.Count) > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/broadcast/delete", "POST", parameter_array, json);
     }
@@ -177,7 +177,7 @@ class Volar
         }
         if ((file_path == ""))
         {
-            return this.request("api/client/broadcast/archive", "GET", parameter_array,"");
+            return this.request("api/client/broadcast/archive", "GET", parameter_array,file_path);
         }
         else
         {
@@ -247,7 +247,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/template/create", "POST", parameter_array, json);
     }
@@ -269,7 +269,7 @@ class Volar
         string json = "";
         if ((parameter_array.Count) > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/template/update", "POST", parameter_array, json);
     }
@@ -287,7 +287,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/template/delete", "POST", parameter_array, json);
     }
@@ -349,7 +349,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -358,7 +358,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -368,7 +368,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject(parameter_array);
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -415,14 +415,14 @@ class Volar
         }
         return json;
     }
-    public string buildSignature(string route, string type = "", SortedDictionary<string, string> get_params = null, string post_body = "")
+    public string buildSignature(string route, string type, SortedDictionary<string, string> get_params, string post_body)
     {
         //signature here is dependant on the url endpoint.  here, the programmer was
         //  trying to delete a broadcast.  Ideally, you would want to iterate through the
         //  sorted params list, append them to the endpoint as per the documentation,
         //  and use that to generate the signature.
         var signature = secret + type + route;
-
+        Console.Write("execute post body:"+post_body);
         foreach (KeyValuePair<string, string> kvp in get_params)
         {
             signature = signature + kvp.Key + "=" + kvp.Value;
