@@ -48,7 +48,7 @@ class Volar
  */
     public object sites(SortedDictionary<string, string> parameter_array)
     {
-        return this.request("api/client/info", "GET", parameter_array);
+        return this.request("api/client/info", "GET", parameter_array, "");
     }
     /**
  *	gets list of broadcasts
@@ -75,7 +75,7 @@ class Volar
  */
     public object broadcasts(SortedDictionary<string, string> parameter_array)
     {
-        return this.request("api/client/broadcast", "GET", parameter_array);
+        return this.request("api/client/broadcast", "GET", parameter_array, "");
     }
     /**
      *	creates a new broadcast
@@ -130,7 +130,7 @@ class Volar
     }
     public object broadcast_remove_playlist(SortedDictionary<string, string> parameter_array)
     {
-        return this.request("api/client/broadcast/removeplaylist", "GET", parameter_array);
+        return this.request("api/client/broadcast/removeplaylist", "GET", parameter_array, "");
     }
     public object broadcast_poster(SortedDictionary<string, string> parameter_array = null, string image_path = "", string image_name = "")
     {
@@ -177,7 +177,7 @@ class Volar
         }
         if ((file_path == ""))
         {
-            return this.request("api/client/broadcast/archive", "GET", parameter_array);
+            return this.request("api/client/broadcast/archive", "GET", parameter_array,"");
         }
         else
         {
@@ -211,7 +211,7 @@ class Volar
             this.error = "'site' parameter is required";
             return null;
         }
-        return this.request("api/client/template", "GET", parameter_array);
+        return this.request("api/client/template", "GET", parameter_array,"");
     }
     /**
  *	creates a new meta-data template
@@ -317,7 +317,7 @@ class Volar
             this.error = "'site' or 'sites' parameter is required";
             return null;
         }
-        return this.request("api/client/section", "GET", parameter_array);
+        return this.request("api/client/section", "GET", parameter_array, "");
     }
 
     /**
@@ -342,7 +342,7 @@ class Volar
      */
     public object playlists(SortedDictionary<string, string> parameter_array)
     {
-        return this.request("api/client/playlist", "GET", parameter_array);
+        return this.request("api/client/playlist", "GET", parameter_array, "");
     }
     public object playlist_create(SortedDictionary<string, string> parameter_array)
     {
@@ -375,7 +375,7 @@ class Volar
 
     public object timezones(SortedDictionary<string, string> parameter_array)
     {
-        return this.request("api/client/info/timezones", "GET", parameter_array);
+        return this.request("api/client/info/timezones", "GET", parameter_array, "");
     }
 
     /**
@@ -386,7 +386,7 @@ class Volar
      *	@param mixed 	post_body	either a string or an array for post requests.  only used if type is POST.  if left null, an error will be returned
      *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
      */
-    public object request(string route, string type = "", SortedDictionary<string, string> parameter_array = null, string post_body = null)
+    public object request(string route, string type, SortedDictionary<string, string> parameter_array, string post_body)
     {
         type = type.ToUpper();
         parameter_array["api_key"] = this.api_key;
@@ -398,8 +398,8 @@ class Volar
             query_string += ((query_string != "") ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
         }
         query_string = query_string + "&signature=" + signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
-        //Console.Write("this is the post body:"+post_body);
-        string response = this.execute(url + route + query_string, type, post_body, "");
+        Console.Write("this is the post body:"+post_body);
+        string response = this.execute(url + route + query_string, type, post_body, "application/x-www-form-urlencoded");
         if (response == null)
         {
             //error string should have already been set
@@ -436,11 +436,11 @@ class Volar
         return signature;
     }
 
-    public string execute(string url, string type, string post_body, string content_type = "")
+    public string execute(string url, string type, string post_body, string content_type)
     {
        // byte[] byteArray = stringToByteArray(post_body);
         WebRequest request = WebRequest.Create(url);
-        request.ContentType = "application/x-www-form-urlencoded";
+        request.ContentType = content_type;
         request.Method = type;
         // begin write to POST body
         /*Stream dataStream = request.GetRequestStream();
