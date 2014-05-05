@@ -105,7 +105,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string,string>>(parameter_array));
         }
-        return this.request("api/client/broadcast/create", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/broadcast/create", "POST", parameter_array, json);
     }
 
     public object broadcast_update(SortedDictionary<string, string> parameter_array)
@@ -115,7 +115,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/broadcast/update", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/broadcast/update", "POST", parameter_array, json);
     }
     public object broadcast_delete(SortedDictionary<string, string> parameter_array)
     {
@@ -124,7 +124,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/broadcast/delete", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/broadcast/delete", "POST", parameter_array, json);
     }
     public object broadcast_remove_playlist(SortedDictionary<string, string> parameter_array)
     {
@@ -247,7 +247,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/template/create", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/template/create", "POST", parameter_array, json);
     }
     /**
      *	update an existing broadcast meta-data template
@@ -269,7 +269,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/template/update", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/template/update", "POST", parameter_array, json);
     }
 
     /**
@@ -349,7 +349,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/playlist/create", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
     public object playlist_update(SortedDictionary<string, string> parameter_array)
     {
@@ -358,7 +358,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/playlist/create", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
 
     public object playlist_delete(SortedDictionary<string, string> parameter_array)
@@ -368,7 +368,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
-        return this.request("api/client/playlist/create", "POST", new SortedDictionary<string, string>(), json);
+        return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
 
     public object timezones(SortedDictionary<string, string> parameter_array)
