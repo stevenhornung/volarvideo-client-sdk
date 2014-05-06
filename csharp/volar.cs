@@ -105,8 +105,8 @@ class Volar
         {
             json = JsonConvert.SerializeObject(parameter_array);
         }
-        Console.Write("this is the post body passed with broadcast create:");
-        Console.Write(json);
+        Console.Write("this is the post body passed with broadcast create: \n");
+        Console.Write(json+"\n");
         return this.request("api/client/broadcast/create", "POST", parameter_array, json);
     }
 
@@ -287,7 +287,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(parameter_array);
+            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
         return this.request("api/client/template/delete", "POST", parameter_array, json);
     }
@@ -349,7 +349,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(parameter_array);
+            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -358,7 +358,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(parameter_array);
+            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -368,7 +368,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(parameter_array);
+            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -398,7 +398,9 @@ class Volar
             query_string += ((query_string != "") ? "&" : "?") + kvp.Key + "=" + WebUtility.UrlEncode(kvp.Value);
         }
         query_string = query_string + "&signature=" + signature;	//signature doesn't need to be urlencoded, as the buildSignature function does it for you.
-        Console.Write("this is the post body:"+post_body);
+        Console.Write("\nthis is the querystring: " + query_string + "\n");
+        Console.Write("this is the post body: \n"+post_body+"\n");
+        Console.Write("here is what the URL looks like: \n"+url + route + query_string+"\n");
         string response = this.execute(url + route + query_string, type, post_body, "application/x-www-form-urlencoded");
         if (response == null)
         {
@@ -421,24 +423,33 @@ class Volar
         //  trying to delete a broadcast.  Ideally, you would want to iterate through the
         //  sorted params list, append them to the endpoint as per the documentation,
         //  and use that to generate the signature.
-        var signature = secret + type + route;
-        Console.Write("execute post body:"+post_body);
+        var signature = secret;
+        Console.Write("\n secret= " + signature + "\n");
+        signature = signature + type;
+        Console.Write("\n secret + type = " + signature + "\n");
+           signature= signature+ route;
+           Console.Write("\n secret +type + route= " + signature + "\n");
+        //Console.Write("build signaturee post body: \n"+post_body+"\n");
         foreach (KeyValuePair<string, string> kvp in get_params)
         {
             signature = signature + kvp.Key + "=" + kvp.Value;
         }
+        Console.Write("\n signature with keys and values= " + signature + "\n");
         signature = signature + post_body;
+        Console.Write("\nsig +post= " + signature + "\n");
         var test = sha256(signature); //hash the string using sha256
         signature = EncodeTo64(test); //base64 encode the result
         signature = signature.Remove(43); //trim to the first 43 chars
         signature = signature.TrimEnd(new[] { '=' }); //remove trailing '=' chars
         signature = WebUtility.UrlEncode(signature);
+        Console.Write("\n URL encode sig= " + signature + "\n");
         return signature;
     }
 
     public string execute(string url, string type, string post_body, string content_type)
     {
        // byte[] byteArray = stringToByteArray(post_body);
+        Console.Write("This is the execute post_body: \n" + post_body + "\n");
         WebRequest request = WebRequest.Create(url);
         request.ContentType = content_type;
         request.Method = type;
