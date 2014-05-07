@@ -15,7 +15,7 @@ namespace ConsoleApplication1
             SortedDictionary<string, string> other_array = new SortedDictionary<string, string>();
             Console.Write(volar.sites(parameter_array));
             parameter_array.Add("title", "fakecast");
-            parameter_array.Add("contact_name", "Bret Michaels");
+            parameter_array.Add("contact_name", "BretMichaels");
             parameter_array.Add("contact_phone", "555-555-5555");
             parameter_array.Add("contact_email", "fakemail@somewhere.com");
             parameter_array.Add("site", "volar");
