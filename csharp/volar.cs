@@ -117,6 +117,7 @@ class Volar
         {
             json = JsonConvert.SerializeObject(parameter_array);
         }
+        Console.Write(json);
         return this.request("api/client/broadcast/update", "POST", parameter_array, json);
     }
     public object broadcast_delete(SortedDictionary<string, string> parameter_array)
@@ -312,7 +313,7 @@ class Volar
      */
     public object sections(SortedDictionary<string, string> parameter_array)
     {
-        if ((parameter_array["site"] != null) && (parameter_array["sites"] != null))
+        if ((parameter_array["site"] == null) && (parameter_array["sites"] == null))
         {
             this.error = "'site' or 'sites' parameter is required";
             return null;
@@ -349,7 +350,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject((parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -358,7 +359,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject((parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -368,7 +369,7 @@ class Volar
         string json = "";
         if (parameter_array.Count > 0)
         {
-            json = JsonConvert.SerializeObject(new List<KeyValuePair<string, string>>(parameter_array));
+            json = JsonConvert.SerializeObject((parameter_array));
         }
         return this.request("api/client/playlist/create", "POST", parameter_array, json);
     }
@@ -380,11 +381,11 @@ class Volar
 
     /**
      *	submits request to base_url through route
-     *	@param string 	route		api uri path (not including base_url!)
-     *	@param string 	type		type of request.  only GET and POST are supported.  if blank, GET is assumed
-     *	@param array 	parameter_array		associative array containing the GET parameters for the request
-     *	@param mixed 	post_body	either a string or an array for post requests.  only used if type is POST.  if left null, an error will be returned
-     *	@return false on failure, array on success.  if failed, volar.getError() can be used to get last error string
+     *	route		api uri path (not including base_url!)
+     *	type		type of request.  only GET and POST are supported.  if blank, GET is assumed
+     *	parameter_array		associative array containing the GET parameters for the request
+     *	post_body	either a string or an array for post requests.  only used if type is POST.  if left null, an error will be returned
+     * false on failure, array on success.  if failed, volar.getError() can be used to get last error string
      */
     public object request(string route, string type, SortedDictionary<string, string> parameter_array, string post_body)
     {
@@ -478,22 +479,6 @@ class Volar
 
         response.Close();
         readStream.Close();
-
-
-
-
-        // begin read response
-       // dataStream = response.GetResponseStream();
-       // StreamReader reader = new StreamReader(dataStream, Encoding.UTF8);
-        // Read the content.
-       // string responseFromServer = reader.ReadToEnd();
-        // Display the content.
-        //Console.WriteLine(responseFromServer);
-        // end read response
-        // Cleanup the streams and the response.
-        //reader.Close();
-        //dataStream.Close();
-        //response.Close();
         return responseToReturn;
 
     }
@@ -506,6 +491,7 @@ class Volar
         return bytes;
     }
 
+    //hashes the string
     static public byte[] sha256(string password)
     {
         var crypt = new SHA256Managed();
@@ -515,6 +501,7 @@ class Volar
         return crypto;
     }
 
+    //encodes to base 64
     static public string EncodeTo64(byte[] toEncode)
     {
         return Convert.ToBase64String(toEncode);
