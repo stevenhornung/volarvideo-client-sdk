@@ -476,7 +476,6 @@ class Volar
 
         string responseToReturn = readStream.ReadToEnd();
 
-        dataStream.Close();
         response.Close();
         readStream.Close();
 
