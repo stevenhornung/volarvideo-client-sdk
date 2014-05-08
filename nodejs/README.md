@@ -28,3 +28,4 @@ volar.broadcasts({"site": "<site slug>", "list", "scheduled"}, function(error, d
     console.log(data);
 });
 ```
+where 'function(error, data){...}' is a callback function for the asynchronous request.

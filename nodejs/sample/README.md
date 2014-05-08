@@ -9,4 +9,4 @@ Once running, it allows a user to select any of the SDK exposed functions and su
 ```
 node sample.js
 ```
-This starts a web application running on localhost at port 8888.
+This starts the sample web application running on localhost at port 8888.
