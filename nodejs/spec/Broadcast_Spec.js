@@ -211,7 +211,7 @@ describe("Broadcasts", function() {
         runs(function() {
             var params = {"site": "sdk-tests", "id": broadcast.id};
             var file_path = "/spec/nodejs-logo.jpeg";
-            var file_name "node js logo";
+            var file_name = "node js logo";
             volar.broadcast_poster(params, file_path, function(rt_error, rt_data) {
                 error = rt_error;
                 data = rt_data
