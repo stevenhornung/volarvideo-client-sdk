@@ -267,7 +267,7 @@ Volar.prototype.broadcast_remove_playlist = function(params, callback) {
 	request(route = 'api/client/broadcast/removeplaylist', method = 'GET', req_params = params, null, callback);
 }
 
-Volar.prototype.broadcast_poster = function(params, file_path, callback) {
+Volar.prototype.broadcast_poster = function(params, file_path, file_name, callback) {
 	/*
 	uploads an image file as the poster for a broadcast.
 
@@ -774,7 +774,11 @@ function request(route, method, req_params, post_body, callback) {
             // Else files need to be piped to request
             else {
                 var file = files['api_poster'] || files['archive'];
-                file.pipe(req(options, function(error, response, body) {
+                file
+                .on('error', function(error) {
+                    callback(new Error(error));
+                })
+                .pipe(req(options, function(error, response, body) {
                     if(error) {
                         callback(new Error(error));
                     }
