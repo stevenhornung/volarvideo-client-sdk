@@ -51,8 +51,7 @@ Volar.prototype.sites = function(params, callback) {
 			status, id, title, description
 		'sort_dir' : direction of sort.  allowed values are 'asc'
 			(ascending) and 'desc' (descending)
-	@return false on failure, object on success.  if failed, Volar.error can
-		be used to get last error string
+	@return object
 	*/
 
 	request(route = 'api/client/info', method = 'GET', req_params = params, null, callback);
@@ -95,8 +94,7 @@ Volar.prototype.broadcasts = function(params, callback) {
 			status, id, title, description
 		'sort_dir' : direction of sort.  allowed values are 'asc'
 			(ascending) and 'desc' (descending)
-	@return false on failure, dict on success.  if failed, Volar.error can
-		be used to get last error string
+	@return object
 	*/
 
 	if(!params['site'] && !params['sites']) {
@@ -359,8 +357,7 @@ Volar.prototype.templates = function(params, callback) {
 				description, date_modified. defaults to title
 			'sort_dir' : direction of sort.  allowed values are 'asc' (ascending) and
 				'desc' (descending). defaults to asc
-		@return false on failure, dict on success.  if failed, Volar.error can
-			be used to get last error string
+		@return object
 
     */
 
@@ -528,8 +525,7 @@ Volar.prototype.sections = function(params, callback) {
 				title
 			'sort_dir' : direction of sort.  allowed values are 'asc'
 				(ascending) and 'desc' (descending)
-		@return false on failure, dict on success.  if failed, Volar.error can
-			be used to get last error string
+		@return object
     */
 
     if(!params['site'] && !params['sites']) {
@@ -566,8 +562,7 @@ Volar.prototype.playlists = function(params, callback) {
 				title
 			'sort_dir' : direction of sort.  allowed values are 'asc'
 				(ascending) and 'desc' (descending)
-		@return false on failure, dict on success.  if failed, Volar.error can
-			be used to get last error string
+		@return object
     */
 
     if(!params['site'] && !params['sites']) {
@@ -691,7 +686,7 @@ function request(route, method, req_params, post_body, callback) {
         HTTP method of request
     @param object params - optional
         dictionary of parameter objects
-    @param string post_body - optional
+    @param object post_body - optional
         body of the post request
     @param object callback - required
         function to call after async request completes
@@ -797,6 +792,7 @@ function request(route, method, req_params, post_body, callback) {
     }
 }
 
+// Build the signature based on api_key, secret, route, method, params and post_body
 function build_signature(route, method, params, post_body) {
     var signature = secret + method.toUpperCase() + route;
 
@@ -848,6 +844,8 @@ function get_options(route, params, method, data) {
     return options;
 }
 
+
+// A makeshift sort function to get parameters in alphabetical order when building the signature
 function sortObject(obj) {
     var sorted = {};
     var key, a = [];
@@ -867,6 +865,7 @@ function sortObject(obj) {
     return sorted;
 }
 
+// Helper to trim strings on the right
 String.prototype.trimRight = function(charlist) {
     if(charlist === undefined) {
         charlist = "\s";
